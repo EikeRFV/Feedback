@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { db } from './config/database.config';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -15,7 +14,6 @@ async function bootstrap() {
 
   const options: SwaggerDocumentOptions = {
     operationIdFactory: (
-      controllerKey: string,
       methodKey: string
     ) => methodKey
   };
@@ -24,14 +22,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, docomentFactory)
 
   app.useGlobalPipes(new ValidationPipe());
-
-  db.authenticate()
-    .then(() => {
-      console.log('Connection has been established successfully.');
-    })
-    .catch((err) => {
-      console.error(`Unable to connect to DB: ${err}`);
-    });
 
   await app.listen(process.env.PORT ?? 3030);
 

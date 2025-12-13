@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
 
   // Create notifications table
   await knex.schema.createTable('notifications', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
+    table.uuid('id').primary();
     table.uuid('user_id').references('id').inTable('users').onDelete('CASCADE');
     table.specificType('type', 'notification_type').notNullable();
     table.string('title').notNullable();
@@ -35,7 +35,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`CREATE TYPE audit_action AS ENUM ('create', 'update', 'delete')`);
 
   await knex.schema.createTable('statement_audit_logs', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
+    table.uuid('id').primary();
     table.uuid('statement_id').references('id').inTable('statements').onDelete('CASCADE');
     table.uuid('user_id').references('id').inTable('users').onDelete('SET NULL');
     table.specificType('action', 'audit_action').notNullable();

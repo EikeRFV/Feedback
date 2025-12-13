@@ -1,67 +1,51 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../config/database.service';
 import { Statement } from '../../common/entities/statement.entity';
 
 @Injectable()
 export class StatementsRepository {
-  constructor(private readonly db: DatabaseService) {}
-
   async findAll(userId?: string) {
-    const query = this.db
-      .knex('statements')
-      .select('*')
-      .orderBy('created_at', 'desc');
-
-    if (userId) {
-      query.where('user_id', userId);
-    }
-
-    return query;
+    return Statement.findAll({
+      where: userId ? { userId } : undefined,
+      order: [['createdAt', 'DESC']],
+    });
   }
 
   async findOne(id: string) {
-    return this.db
-      .knex('statements')
-      .select('*')
-      .where('id', id)
-      .first();
+    return Statement.findOne({
+      where: { id },
+    });
   }
 
   async create(data: Partial<Statement>) {
-    const [statement] = await this.db
-      .knex('statements')
-      .insert({
-        user_id: data.userId,
-        amount: data.amount,
-        type: data.type,
-        status: data.status,
-        description: data.description,
-        reference_id: data.referenceId,
-        reference_type: data.referenceType,
-        metadata: data.metadata,
-      })
-      .returning('*');
-
-    return statement;
+    return Statement.create({
+      userId: data.userId,
+      amount: data.amount,
+      type: data.type,
+      status: data.status,
+      description: data.description,
+      referenceId: data.referenceId,
+      referenceType: data.referenceType,
+      metadata: data.metadata,
+    });
   }
 
   async update(id: string, data: Partial<Statement>) {
-    const [statement] = await this.db
-      .knex('statements')
-      .where('id', id)
-      .update({
+    await Statement.update(
+      {
         status: data.status,
         metadata: data.metadata,
-      })
-      .returning('*');
+      },
+      {
+        where: { id },
+      },
+    );
 
-    return statement;
+    return this.findOne(id);
   }
 
   async delete(id: string) {
-    await this.db
-      .knex('statements')
-      .where('id', id)
-      .delete();
+    await Statement.destroy({
+      where: { id },
+    });
   }
 }

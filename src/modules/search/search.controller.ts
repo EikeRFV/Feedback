@@ -4,7 +4,6 @@ import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { SearchService } from './search.service.js';
 import { SearchDevsDto, SearchReviewsDto, SearchSolutionsDto } from './dto/search.dto';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
-import { User } from '../users/entities/user.entity';
 import { UserResponseDto } from '../users/dto/response-user.dto';
 import { ReviewRequestDto } from '../review-request/dto/review-request.dto';
 import { SolutionDto } from '../solution/dto/solution.dto';
@@ -14,7 +13,7 @@ import { SolutionDto } from '../solution/dto/solution.dto';
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class SearchController {
-  constructor(private readonly searchService: SearchService) {}
+  constructor(private readonly searchService: SearchService) { }
 
   @Get('devs')
   @ApiOkResponse({

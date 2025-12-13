@@ -1,3 +1,4 @@
+import { ReviewRequest } from '@/modules/review-request/entities/review-request.entity';
 import { Optional } from 'sequelize';
 import {
   Table,
@@ -20,7 +21,7 @@ interface SolutionAttributes {
 type SolutionCreationAttributes = Optional<SolutionAttributes, 'id' | 'acceptedSolution'>
 
 @Table({
-  tableName: 'solution-reviews',
+  tableName: 'solutions',
   timestamps: true,
 })
 export class Solution extends Model<SolutionAttributes, SolutionCreationAttributes> {
@@ -52,4 +53,11 @@ export class Solution extends Model<SolutionAttributes, SolutionCreationAttribut
     type: DataType.BOOLEAN,
   })
   acceptedSolution: boolean;
+
+  @ForeignKey(() => ReviewRequest)
+  @Column
+  reviewRequestId: string;
+
+  @BelongsTo(() => ReviewRequest)
+  reviewRequest!: ReviewRequest;
 }

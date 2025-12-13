@@ -2,7 +2,7 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('chat_rooms', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
+    table.uuid('id').primary();
     table.uuid('review_id').notNullable();
     table.uuid('dev_id').notNullable();
     table.uuid('client_id').notNullable();
@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
   });
 
   await knex.schema.createTable('chat_messages', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
+    table.uuid('id').primary();
     table.uuid('room_id').notNullable();
     table.uuid('user_id').notNullable();
     table.text('content').notNullable();

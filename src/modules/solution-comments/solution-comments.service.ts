@@ -89,7 +89,7 @@ export class SolutionCommentsService {
       throw new NotFoundException('Comment not found')
     }
 
-    const createdAt = new Date(comment.createdAt as string);
+    const createdAt = new Date(comment.createdAt);
     const diffMinutes = (Date.now() - createdAt.getTime()) / (1000 * 60);
 
     if (diffMinutes > 5) {
@@ -123,7 +123,7 @@ export class SolutionCommentsService {
       throw new NotFoundException('Comment not found')
     }
 
-    const createdAt = new Date(comment.createdAt as string);
+    const createdAt = new Date(comment.createdAt);
     const diffMinutes = (Date.now() - createdAt.getTime()) / (1000 * 60);
 
     if (diffMinutes > 5) {

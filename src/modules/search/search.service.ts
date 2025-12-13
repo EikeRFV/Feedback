@@ -121,8 +121,7 @@ export class SearchService {
     return {
       results: rows.map(solution => ({
         id: solution.id,
-        reviewId: solution.reviewId,
-        devId: solution.devId,
+        acceptReviewId: solution.acceptReviewId,
         solution: solution.solution,
         acceptedSolution: solution.acceptedSolution,
         createdAt: solution.createdAt,

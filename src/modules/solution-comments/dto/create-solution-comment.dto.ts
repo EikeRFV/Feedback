@@ -15,7 +15,7 @@ export class CreateSolutionCommentDto {
   })
   @IsString()
   @MinLength(1)
-  content: string;
+  comment: string;
 
   @IsUUID()
   userId: string;

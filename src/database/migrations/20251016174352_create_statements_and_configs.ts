@@ -16,7 +16,7 @@ export async function up(knex: Knex): Promise<void> {
 
   // Create statements table
   await knex.schema.createTable('statements', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
+    table.uuid('id').primary();
     table.uuid('user_id').references('id').inTable('users').onDelete('CASCADE');
     table.decimal('amount', 10, 2).notNullable();
     table.string('type').notNullable(); // 'credit' or 'debit'
