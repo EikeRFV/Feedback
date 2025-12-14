@@ -1,13 +1,15 @@
 import { AppLayout } from "@/components/layout/AppLayout";
-import { Route, Routes } from "react-router";
+import { Route, Routes } from "react-router-dom";
 import { PrivateRoutes } from "./PrivateRoutes";
 import { Home } from "@/pages/Home";
+import { Login } from "@/pages/auth/Login";
+import { Signup } from "@/pages/auth/Signup";
 
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<Home />} />
-      <Route path="/signup" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
       <Route element={<AppLayout />}>
         <Route path="/" element={<Home />} />
