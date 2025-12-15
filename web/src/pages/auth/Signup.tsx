@@ -49,20 +49,21 @@ export function Signup() {
       return;
     }
 
-    setIsLoading(true);
-    const result = await register({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      role: formData.role,
-    });
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
 
-    if (result.success) {
+      const result = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      });
+      setIsLoading(false);
+
       toast.success('Conta criada com sucesso! Faça login para continuar.');
       navigate('/login');
-    } else {
-      toast.error(result.error || 'Erro ao criar conta');
+    } catch (error) {
+      toast.error(error || 'Erro ao criar conta');
     }
   }
 
