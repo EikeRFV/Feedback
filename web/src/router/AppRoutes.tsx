@@ -14,6 +14,7 @@ import { Profile } from "@/pages/Profile";
 import { MyRequests } from "@/pages/MyRequests";
 import { Solutions } from "@/pages/Solutions";
 import { CreateReviewRequest } from "@/pages/CreateReviewRequest";
+import ReviewPage from "@/pages/Review";
 
 export function AppRoutes() {
   return (
@@ -21,9 +22,7 @@ export function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<Home />} />
-      </Route >
+      <Route path="/" element={<Home />} />
 
       <Route element={<PrivateRoutes />}>
         <Route element={<AppLayout />}>
@@ -37,6 +36,7 @@ export function AppRoutes() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/my-requests" element={<MyRequests />} />
           <Route path="/solutions" element={<Solutions />} />
+          <Route path="/review/:id" element={<ReviewPage />} />
         </Route>
       </Route>
     </Routes >
