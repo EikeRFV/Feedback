@@ -3,8 +3,11 @@ import { Footer } from "@/components/Footer";
 import { HomeHeader } from "@/components/HomeHeader";
 import { Button } from "@/components/ui/button";
 import { Code, MessageSquare, Search, Shield, Users, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function Home() {
+  const navigate = useNavigate()
+
   return (
     <div className="flex flex-col min-h-screen">
       <HomeHeader />
@@ -70,7 +73,8 @@ export function Home() {
               <Button
                 variant="secondary"
                 size="lg"
-                className="bg-white text-primary hover:bg-gray-100 px-8 py-3 rounded-lg"
+                className="bg-white text-primary hover:bg-gray-100 px-8 py-3 rounded-lg cursor-pointer"
+                onClick={() => navigate('/signup')}
               >
                 Criar Conta Grátis
               </Button>

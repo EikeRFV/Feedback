@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/services/api';
+import { api } from '@/services/mock/api';
 import { Loader2, Clock, DollarSign } from 'lucide-react';
 
 interface ReviewRequest {
@@ -38,7 +38,7 @@ export function MyReviews() {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Minhas Reviews</h1>
-      
+
       <div className="space-y-4">
         {reviews.length === 0 ? (
           <Card>

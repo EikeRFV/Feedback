@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/services/api';
+import { api } from '@/services/mock/api';
 import { Loader2, Bell } from 'lucide-react';
 
 interface Notification {
@@ -44,7 +44,7 @@ export function Notifications() {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Notificações</h1>
-      
+
       <div className="space-y-4">
         {notifications.length === 0 ? (
           <Card>
@@ -69,8 +69,8 @@ export function Notifications() {
               </CardHeader>
               <CardContent>
                 {!notif.read && (
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => markAsRead(notif.id)}
                     className="cursor-pointer"

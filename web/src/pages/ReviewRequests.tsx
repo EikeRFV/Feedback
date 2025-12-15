@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { DataTableColumn, DataTableAction } from '@/components/DataTable';
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/services/api';
+import { api } from '@/services/mock/api';
 import { Code } from 'lucide-react';
 
 interface ReviewRequest {

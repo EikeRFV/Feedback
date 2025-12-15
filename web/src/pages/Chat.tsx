@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { api } from '@/services/api';
+import { api } from '@/services/mock/api';
 import { Loader2, Send } from 'lucide-react';
 
 interface ChatRoom {
@@ -77,7 +77,7 @@ export function Chat() {
         <h2 className="text-xl font-bold mb-4">Conversas</h2>
         <div className="space-y-2">
           {rooms.map((room) => (
-            <Card 
+            <Card
               key={room.id}
               className={`cursor-pointer transition-colors ${selectedRoom === room.id ? 'bg-primary text-white' : ''}`}
               onClick={() => setSelectedRoom(room.id)}

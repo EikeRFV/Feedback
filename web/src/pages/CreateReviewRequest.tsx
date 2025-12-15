@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { FormField } from '@/components/FormField';
-import { api } from '@/services/api';
+import { api } from '@/services/mock/api';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
@@ -139,9 +139,8 @@ export function CreateReviewRequest() {
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Descreva o projeto e o que você gostaria de melhorar"
-                className={`w-full p-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.description ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full p-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.description ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 rows={5}
               />
               {errors.description && (
@@ -167,9 +166,8 @@ export function CreateReviewRequest() {
                 name="language"
                 value={formData.language}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.language ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.language ? 'border-red-500' : 'border-gray-300'
+                  }`}
               >
                 <option value="">Selecione uma linguagem</option>
                 <option value="javascript">JavaScript</option>

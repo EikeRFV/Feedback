@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/services/api';
+import { api } from '@/services/mock/api';
 import { Loader2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -55,7 +55,7 @@ export function MyRequests() {
         <h1 className="text-3xl font-bold">Minhas Solicitações</h1>
         <Button className="cursor-pointer">Criar Nova Solicitação</Button>
       </div>
-      
+
       <div className="space-y-4">
         {requests.length === 0 ? (
           <Card>
@@ -92,7 +92,7 @@ export function MyRequests() {
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" className="cursor-pointer">Editar</Button>
-                    <Button 
+                    <Button
                       variant="destructive"
                       size="icon"
                       onClick={() => deleteRequest(req.id)}

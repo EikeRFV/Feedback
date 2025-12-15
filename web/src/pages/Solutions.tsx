@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/services/api';
+import { api } from '@/services/mock/api';
 import { Loader2, Code, ThumbsUp } from 'lucide-react';
 
 interface Solution {
@@ -35,7 +35,7 @@ export function Solutions() {
   const upvoteSolution = async (solutionId: string) => {
     const result = await api.post(`/solutions/${solutionId}/upvote`, {});
     if (result.data) {
-      setSolutions(solutions.map(s => 
+      setSolutions(solutions.map(s =>
         s.id === solutionId ? { ...s, upvotes: (s.upvotes || 0) + 1 } : s
       ));
     }
@@ -48,7 +48,7 @@ export function Solutions() {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Soluções Propostas</h1>
-      
+
       <div className="space-y-4">
         {solutions.length === 0 ? (
           <Card>
@@ -81,7 +81,7 @@ export function Solutions() {
                     {new Date(sol.createdAt).toLocaleDateString()}
                   </span>
                   <div className="flex gap-2">
-                    <Button 
+                    <Button
                       variant="outline"
                       size="sm"
                       onClick={() => upvoteSolution(sol.id)}
