@@ -4,7 +4,7 @@ import {
   useState,
   type ReactNode
 } from "react"
-import { api } from "@/services/api"
+import { UsersService } from "@/services/users"
 
 type AuthContextData = {
   token: string | null
@@ -32,8 +32,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const storedToken = localStorage.getItem("accessToken")
       if (storedToken) {
         setToken(storedToken)
-        // Tentar carregar dados do usuário
-        const response = await api.getCurrentUser()
+
+        const response = await UsersService.me()
         if (response.data) {
           setUser(response.data)
         }
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   async function loadUser() {
-    const response = await api.getCurrentUser()
+    const response = await UsersService.me()
     if (response.data) {
       setUser(response.data)
     }
