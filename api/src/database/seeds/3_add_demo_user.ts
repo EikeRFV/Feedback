@@ -2,9 +2,8 @@ import { Knex } from 'knex';
 import * as bcrypt from 'bcrypt';
 
 export async function seed(knex: Knex): Promise<void> {
-  // Verificar se usuário de demo já existe
   const existingUser = await knex('users').where('email', 'demo@example.com').first();
-  
+
   if (existingUser) {
     console.log('Usuário de demo já existe!');
     return;
@@ -15,14 +14,14 @@ export async function seed(knex: Knex): Promise<void> {
   // Inserir usuário de demo
   await knex('users').insert({
     id: '00000000-0000-0000-0000-000000000001',
-    firstName: 'Demo',
-    lastName: 'User',
+    first_name: 'Demo',
+    last_name: 'User',
     email: 'demo@example.com',
     password: hashedPassword,
-    roleId: 1, // Client
+    role_id: 1, // Client
     active: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    created_at: new Date(),
+    updated_at: new Date(),
   });
 
   console.log('✅ Usuário de demo criado com sucesso!');
