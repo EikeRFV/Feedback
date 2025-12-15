@@ -4,12 +4,15 @@ import {
   useState,
   type ReactNode
 } from "react"
+import { api } from "@/services/api"
 
 type AuthContextData = {
   token: string | null
+  user: any | null
   isAuthenticated: boolean
-  login: (token: string) => void
+  login: (token: string, user: any) => void
   logout: () => void
+  loadUser: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextData | null>(null)
@@ -20,31 +23,60 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [token, setToken] = useState<string | null>(null)
+  const [user, setUser] = useState<any | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
+  // Carregar dados ao montar o componente
   useEffect(() => {
-    const storedToken = localStorage.getItem("token")
-    if (storedToken) {
-      setToken(storedToken)
+    const loadInitialData = async () => {
+      const storedToken = localStorage.getItem("accessToken")
+      if (storedToken) {
+        setToken(storedToken)
+        // Tentar carregar dados do usuário
+        const response = await api.getCurrentUser()
+        if (response.data) {
+          setUser(response.data)
+        }
+      }
+      setIsLoading(false)
     }
+
+    loadInitialData()
   }, [])
 
-  function login(token: string) {
-    localStorage.setItem("token", token)
+  function login(token: string, userData: any) {
+    localStorage.setItem("accessToken", token)
     setToken(token)
+    setUser(userData)
   }
 
   function logout() {
-    localStorage.removeItem("token")
+    localStorage.removeItem("accessToken")
+    localStorage.removeItem("refreshToken")
     setToken(null)
+    setUser(null)
+  }
+
+  async function loadUser() {
+    const response = await api.getCurrentUser()
+    if (response.data) {
+      setUser(response.data)
+    }
+  }
+
+  if (isLoading) {
+    return <div>Carregando...</div>
   }
 
   return (
     <AuthContext.Provider
       value={{
         token,
+        user,
         isAuthenticated: token !== null,
         login,
         logout,
+        loadUser,
       }}
     >
       {children}

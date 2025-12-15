@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Code2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { register } from '@/services/api';
 
 export function Signup() {
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +67,7 @@ export function Signup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center -bg-linear-to-b from-white to-gray-50 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-white to-gray-50 px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">

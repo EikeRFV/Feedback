@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Code2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { api } from '@/services/api';
+import { useAuth } from '@/hooks/useAuth';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -14,8 +16,8 @@ export function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  // TERMINAR PARTE DE INTEGRACAO COM API
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -25,10 +27,19 @@ export function Login() {
     }
     try {
       setIsLoading(true);
-      setIsLoading(false);
-      toast.success('Login realizado com sucesso!');
-      navigate('/dashboard');
+      const result = await api.login(email, password);
+      if (result.data) {
+        // Fazer login no contexto
+        login(result.data.accessToken, result.data.user || { email });
+        toast.success('Login realizado com sucesso!');
+        navigate('/');
+      } else {
+        toast.error(result.error || 'Erro ao fazer login');
+      }
     } catch (error) {
+      toast.error('Erro ao fazer login');
+    } finally {
+      setIsLoading(false);
     }
   }
 

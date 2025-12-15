@@ -6,6 +6,13 @@ import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true,
+  });
+
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .setTitle('HotFix')
     .setDescription('A platform connecting developers with expert reviewers for fast and reliable code corrections like Uber, but for code.')
