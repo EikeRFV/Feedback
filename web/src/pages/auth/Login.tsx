@@ -43,6 +43,53 @@ export function Login() {
     }
   }
 
+  async function handleDemoLogin() {
+    try {
+      setIsLoading(true);
+      // Ativar modo mock
+      setMockMode(true);
+      
+      // Usar credenciais de demo do mock
+      const mockUser = MOCK_USERS['test-user-id'];
+      localStorage.setItem('accessToken', 'mock-access-token');
+      localStorage.setItem('refreshToken', 'mock-refresh-token');
+      
+      login('mock-access-token', mockUser);
+      toast.success('✅ Login de demo ativado!');
+      navigate('/');
+    } catch (error) {
+      toast.error('Erro ao fazer login de demo');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!email || !password) {
+      toast.error('Preencha todos os campos');
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const result = await api.login(email, password);
+      if (result.data) {
+        // Fazer login no contexto
+        login(result.data.accessToken, result.data.user || { email });
+        toast.success('Login realizado com sucesso!');
+        navigate('/');
+      } else {
+        toast.error(result.error || 'Erro ao fazer login');
+      }
+    } catch (error) {
+      toast.error('Erro ao fazer login');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-white to-gray-50 px-4 py-8">
       <div className="w-full max-w-md">

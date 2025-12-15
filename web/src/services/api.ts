@@ -12,12 +12,22 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3030/api';
 
+// ============================================================================
+// TIPOS E INTERFACES
+// ============================================================================
+
 interface ApiResponse<T> {
   data?: T;
   error?: string;
 }
 
+// ============================================================================
+// CLASSE PRINCIPAL DO SERVIÇO
+// ============================================================================
+
 class ApiService {
+  // ----------- AUTENTICAÇÃO (Token Management) -----------
+
   private getToken(): string | null {
     return localStorage.getItem('accessToken');
   }
@@ -48,10 +58,13 @@ class ApiService {
     }
   }
 
+  // ----------- REQUISIÇÕES HTTP (Core) -----------
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
+    // Usar mock data se modo mock estiver ativado
     if (isMockMode()) {
       const mockResponse = this.getMockData<T>(endpoint, options.method || 'GET', options.body);
       if (mockResponse) {
@@ -60,6 +73,7 @@ class ApiService {
       }
     }
 
+    // Preparar headers com autenticação
     const token = this.getToken();
     const headers: any = {
       'Content-Type': 'application/json',
@@ -71,11 +85,13 @@ class ApiService {
     }
 
     try {
+      // Fazer requisição
       let response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
         headers,
       });
 
+      // Se token expirou, tentar renovar
       if (response.status === 401 && token) {
         const refreshed = await this.refreshAccessToken();
         if (refreshed) {
@@ -99,59 +115,59 @@ class ApiService {
     }
   }
 
+  // ----------- MOCK DATA (Desenvolvimento/Offline) -----------
+
   private getMockData<T>(endpoint: string, method: string, body?: any): ApiResponse<T> | null {
     const currentUser = getCurrentMockUser();
 
+    // Chat Rooms
     if (endpoint === '/chat/rooms' && method === 'GET') {
       return { data: MOCK_CHAT_ROOMS as T };
     }
 
-    const roomMatch = endpoint.match(/^\/chat\/room\/(.+)$/);
-    if (roomMatch && method === 'GET' && !endpoint.includes('/messages')) {
-      const roomId = roomMatch[1];
-      const room = MOCK_CHAT_ROOMS.find(r => r.id === roomId);
-      if (room) {
-        return { data: room as T };
-      }
-    }
-
+    // Chat Messages
     const messagesMatch = endpoint.match(/^\/chat\/room\/(.+)\/messages/);
-    if (messagesMatch && method === 'GET') {
+    if (messagesMatch) {
       const roomId = messagesMatch[1];
-      const messages = MOCK_MESSAGES[roomId as keyof typeof MOCK_MESSAGES] || [];
-      return { data: messages as T };
-    }
-
-    if (messagesMatch && method === 'POST' && body) {
-      const roomId = messagesMatch[1];
-      const parsedBody = typeof body === 'string' ? JSON.parse(body) : body;
-      const newMessage = {
-        id: 'msg-' + Date.now(),
-        content: parsedBody.content,
-        createdAt: new Date().toISOString(),
-        author: currentUser || MOCK_USERS['test-user-id'],
-      };
       
-      if (!MOCK_MESSAGES[roomId as keyof typeof MOCK_MESSAGES]) {
-        (MOCK_MESSAGES as any)[roomId] = [];
+      if (method === 'GET') {
+        const messages = MOCK_MESSAGES[roomId as keyof typeof MOCK_MESSAGES] || [];
+        return { data: messages as T };
       }
-      (MOCK_MESSAGES as any)[roomId].push(newMessage);
       
-      return { data: newMessage as T };
+      if (method === 'POST' && body) {
+        const parsedBody = typeof body === 'string' ? JSON.parse(body) : body;
+        const newMessage = {
+          id: 'msg-' + Date.now(),
+          content: parsedBody.content,
+          createdAt: new Date().toISOString(),
+          author: currentUser || MOCK_USERS['test-user-id'],
+        };
+        
+        if (!MOCK_MESSAGES[roomId as keyof typeof MOCK_MESSAGES]) {
+          (MOCK_MESSAGES as any)[roomId] = [];
+        }
+        (MOCK_MESSAGES as any)[roomId].push(newMessage);
+        return { data: newMessage as T };
+      }
     }
 
+    // Usuários
     const userMatch = endpoint.match(/^\/users\/(.+)$/);
     if (userMatch && method === 'GET') {
       const userId = userMatch[1];
+      
       if (userId === 'me' && currentUser) {
         return { data: currentUser as T };
       }
+      
       const user = MOCK_USERS[userId as keyof typeof MOCK_USERS];
       if (user) {
         return { data: user as T };
       }
     }
 
+    // Comentários de Usuário
     const commentsMatch = endpoint.match(/^\/user-comments\?userId=(.+)$/);
     if (commentsMatch && method === 'GET') {
       const userId = commentsMatch[1];
@@ -171,6 +187,7 @@ class ApiService {
       return { data: newComment as T };
     }
 
+    // Review Requests (Solicitações de Review)
     if (endpoint === '/review-requests' && method === 'GET') {
       return { data: MOCK_REVIEW_REQUESTS as T };
     }
@@ -189,8 +206,8 @@ class ApiService {
     if (requestMatch && method === 'GET') {
       const requestId = requestMatch[1];
       const request = MOCK_REVIEW_REQUESTS.find(r => r.id === requestId);
+      
       if (request) {
-        // Transform to match expected interface
         const transformedRequest = {
           id: request.id,
           title: request.title,
@@ -227,6 +244,7 @@ class ApiService {
       return { data: newRequest as T };
     }
 
+    // Solutions (Soluções)
     const solutionsMatch = endpoint.match(/^\/review-requests\/(.+)\/solutions$/);
     if (solutionsMatch && method === 'GET') {
       const requestId = solutionsMatch[1];
@@ -234,12 +252,11 @@ class ApiService {
       return { data: solutions as T };
     }
 
-    // Handle /solutions/by-review/:id endpoint
     const solutionsByReviewMatch = endpoint.match(/^\/solutions\/by-review\/(.+)$/);
     if (solutionsByReviewMatch && method === 'GET') {
       const requestId = solutionsByReviewMatch[1];
       const solutions = MOCK_SOLUTIONS[requestId as keyof typeof MOCK_SOLUTIONS] || [];
-      // Transform solutions to match expected interface
+      
       const transformedSolutions = solutions.map(sol => ({
         id: sol.id,
         content: sol.proposal,
@@ -272,15 +289,16 @@ class ApiService {
         (MOCK_SOLUTIONS as any)[requestId] = [];
       }
       (MOCK_SOLUTIONS as any)[requestId].push(newSolution);
-      
       return { data: newSolution as T };
     }
 
+    // Developers (Lista de Desenvolvedores)
     if (endpoint.startsWith('/developers') && method === 'GET') {
       const developers = Object.values(MOCK_USERS).filter(u => u.role === 'dev');
       return { data: developers as T };
     }
 
+    // Notifications (Notificações)
     if (endpoint === '/notifications' && method === 'GET') {
       const notifications = MOCK_NOTIFICATIONS[currentUser?.id as keyof typeof MOCK_NOTIFICATIONS] || [];
       return { data: notifications as T };
@@ -290,6 +308,7 @@ class ApiService {
     if (notifMatch && method === 'PATCH') {
       const notifId = notifMatch[1];
       const userNotifs = MOCK_NOTIFICATIONS[currentUser?.id as keyof typeof MOCK_NOTIFICATIONS];
+      
       if (userNotifs) {
         const notif = userNotifs.find(n => n.id === notifId);
         if (notif) {
@@ -299,8 +318,10 @@ class ApiService {
       }
     }
 
+    // Update User (Atualizar Usuário)
     if (endpoint === '/users/me' && (method === 'PUT' || method === 'PATCH')) {
       if (!currentUser) return null;
+      
       const parsedBody = typeof body === 'string' ? JSON.parse(body) : body;
       const userId = currentUser.id as keyof typeof MOCK_USERS;
       const updatedUser = { ...MOCK_USERS[userId], ...parsedBody };
@@ -308,6 +329,7 @@ class ApiService {
       return { data: updatedUser as T };
     }
 
+    // Dashboard Stats
     if (endpoint === '/dashboard/stats' && method === 'GET') {
       if (currentUser?.role === 'client') {
         return {
@@ -332,6 +354,8 @@ class ApiService {
 
     return null;
   }
+
+  // ----------- MÉTODOS HTTP SIMPLES -----------
 
   async get<T>(endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { method: 'GET' });
@@ -362,9 +386,11 @@ class ApiService {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 
+  // ----------- UPLOAD DE ARQUIVOS -----------
+
   async uploadFile<T>(endpoint: string, formData: FormData): Promise<ApiResponse<T>> {
     const token = this.getToken();
-    const headers: HeadersInit = {};
+    const headers: any = {};
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -389,11 +415,12 @@ class ApiService {
     }
   }
 
+  // ----------- AUTENTICAÇÃO (Login/Register) -----------
+
   async login(email: string, password: string): Promise<ApiResponse<{ accessToken: string; refreshToken?: string; user: any }>> {
     const response = await this.post('/auth/login', { email, password });
     
     if (response.data && (response.data as any).token) {
-      // Buscar dados do usuário após login
       const userResponse = await this.get('/users/me');
       return {
         data: {
@@ -406,7 +433,14 @@ class ApiService {
     return response as any;
   }
 
-  async register(data: { firstName: string; lastName: string; email: string; password: string; roleId: number; languages: number[] }): Promise<ApiResponse<{ user: any }>> {
+  async register(data: { 
+    firstName: string; 
+    lastName: string; 
+    email: string; 
+    password: string; 
+    roleId: number; 
+    languages: number[] 
+  }): Promise<ApiResponse<{ user: any }>> {
     return this.post('/auth/signup', data);
   }
 
@@ -420,7 +454,15 @@ class ApiService {
   }
 }
 
+// ============================================================================
+// EXPORTAÇÃO DO SERVIÇO
+// ============================================================================
+
 export const api = new ApiService();
+
+// ============================================================================
+// FUNÇÕES AUXILIARES PÚBLICAS
+// ============================================================================
 
 export async function login(email: string, password: string) {
   const response = await api.login(email, password);
@@ -435,12 +477,12 @@ export async function login(email: string, password: string) {
 }
 
 export async function register(data: { name: string; email: string; password: string; role: string }) {
-  // Converter o 'name' em 'firstName' e 'lastName'
+  // Converter nome completo em firstName e lastName
   const nameParts = data.name.split(' ');
   const firstName = nameParts[0];
   const lastName = nameParts.slice(1).join(' ') || nameParts[0];
 
-  // Converter role 'dev' ou 'client' para roleId (1 = client, 2 = dev)
+  // Converter role para roleId: 1 = client, 2 = dev
   const roleId = data.role === 'dev' ? 2 : 1;
 
   const response = await api.register({
@@ -449,7 +491,7 @@ export async function register(data: { name: string; email: string; password: st
     email: data.email,
     password: data.password,
     roleId,
-    languages: [1], // ID padrão de linguagem
+    languages: [1],
   });
 
   if (response.data) {
