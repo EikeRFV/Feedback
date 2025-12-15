@@ -1,4 +1,5 @@
 import { Code } from "lucide-react"
+import { FooterDialog } from "./FooterDialog"
 
 export function Footer() {
   return (
@@ -11,18 +12,25 @@ export function Footer() {
           </div>
 
           <nav className="flex items-center gap-6">
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Sobre
-            </a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Termos
-            </a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Privacidade
-            </a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Suporte
-            </a>
+            <FooterDialog title="Sobre">
+              Somos uma plataforma focada em qualidade, performance e boas práticas
+              de desenvolvimento.
+            </FooterDialog>
+
+            <FooterDialog title="Termos">
+              Ao utilizar a plataforma, você concorda com nossos termos de uso,
+              políticas de acesso e responsabilidades.
+            </FooterDialog>
+
+            <FooterDialog title="Privacidade">
+              Seus dados são tratados com segurança e nunca compartilhados com
+              terceiros sem consentimento.
+            </FooterDialog>
+
+            <FooterDialog title="Suporte">
+              Entre em contato pelo e-mail suporte@hotfix.dev ou pelo nosso Discord
+              oficial.
+            </FooterDialog>
           </nav>
         </div>
       </div>
