@@ -21,7 +21,7 @@ export class AuthService {
   ) { }
 
   async signup(signUpDto: SignupDto): Promise<DefaultResponse> {
-    const { languages, ...userData } = signUpDto;
+    const { ...userData } = signUpDto;
 
     const user = await this.usersService.findOneByEmail(userData.email);
     if (user) {
@@ -46,8 +46,6 @@ export class AuthService {
       ...userData,
       password: hashedPassword,
     });
-
-    await this.usersService.insertLanguages(id, languages)
 
     return { message: 'User created successfully', id };
   }

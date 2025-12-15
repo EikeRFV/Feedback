@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, Put, Query, Res, UseGuards } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Body, Controller, Delete, Get, Put, Query, Res, UseGuards } from '@nestjs/common'; import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guard/auth.guard';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { User } from './entities/user.entity';
