@@ -1,6 +1,7 @@
 import { Bell, Home, MessageSquare, Search, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { NavLink } from "react-router-dom";
 
 export function LoggedHeader() {
   return (
@@ -14,24 +15,23 @@ export function LoggedHeader() {
           <span className="text-lg font-semibold">Hotfix</span>
         </div>
 
-        {/* Navigation */}
         <nav className="hidden items-center gap-6 md:flex">
-          <a href="#" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+          <NavLink to="/dashboard" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
             <Home className="h-4 w-4" />
             <span>Dashboard</span>
-          </a>
-          <a href="#" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+          </NavLink>
+          <NavLink to="/my-reviews" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
             <Search className="h-4 w-4" />
             <span>Reviews</span>
-          </a>
-          <a href="#" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+          </NavLink>
+          <NavLink to="/developers" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
             <User className="h-4 w-4" />
             <span>Buscar Devs</span>
-          </a>
-          <a href="#" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+          </NavLink>
+          <NavLink to="/chat" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
             <MessageSquare className="h-4 w-4" />
             <span>Chat</span>
-          </a>
+          </NavLink>
         </nav>
 
         {/* Right side */}
