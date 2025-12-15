@@ -7,63 +7,73 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Code2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { register } from '@/services/api';
+import { AuthService } from '@/services/auth';
+
+type RoleId = 1 | 2;
 
 export function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'client' as 'dev' | 'client',
+    roleId: 1 as RoleId,
   });
   const navigate = useNavigate();
 
-  function handleChange(field: string, value: string) {
+  function handleChange<K extends keyof typeof formData>(
+    field: K,
+    value: typeof formData[K]
+  ) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Validações
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      toast.error('Preencha todos os campos');
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      roleId,
+    } = formData;
+
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      toast.error('Preencha todos os campos obrigatórios');
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (password.length < 8) {
+      toast.error('A senha deve ter pelo menos 8 caracteres');
+      return;
+    }
+
+    if (password !== confirmPassword) {
       toast.error('As senhas não coincidem');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      toast.error('A senha deve ter pelo menos 6 caracteres');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error('Email inválido');
       return;
     }
 
     try {
       setIsLoading(true);
 
-      const result = await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        role: formData.role,
+      await AuthService.signup({
+        firstName,
+        lastName,
+        email,
+        password,
+        roleId,
       });
-      setIsLoading(false);
 
       toast.success('Conta criada com sucesso! Faça login para continuar.');
       navigate('/login');
-    } catch (error) {
-      toast.error(error || 'Erro ao criar conta');
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao criar conta');
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -87,12 +97,24 @@ export function Signup() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nome completo</Label>
+                <Label htmlFor="name">Primeiro Nome</Label>
                 <Input
-                  id="name"
-                  placeholder="João Silva"
-                  value={formData.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
+                  id="firstName"
+                  placeholder="João"
+                  value={formData.firstName}
+                  onChange={(e) => handleChange('firstName', e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+
+
+              <div className="space-y-2">
+                <Label htmlFor="name">Sobrenome</Label>
+                <Input
+                  id="lastName"
+                  placeholder="Da Silva"
+                  value={formData.lastName}
+                  onChange={(e) => handleChange('lastName', e.target.value)}
                   disabled={isLoading}
                 />
               </div>
@@ -136,21 +158,18 @@ export function Signup() {
               <div className="space-y-2">
                 <Label>Tipo de conta</Label>
                 <RadioGroup
-                  value={formData.role}
-                  onValueChange={(value) => handleChange('role', value)}
+                  value={String(formData.roleId)}
+                  onValueChange={(value) => handleChange('roleId', Number(value) as RoleId)}
                   disabled={isLoading}
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="client" id="client" />
-                    <Label htmlFor="client" className="cursor-pointer">
-                      Cliente (solicitar reviews)
-                    </Label>
+                    <RadioGroupItem value="1" id="client" />
+                    <Label htmlFor="client">Cliente</Label>
                   </div>
+
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="dev" id="dev" />
-                    <Label htmlFor="dev" className="cursor-pointer">
-                      Desenvolvedor (oferecer reviews)
-                    </Label>
+                    <RadioGroupItem value="2" id="dev" />
+                    <Label htmlFor="dev">Desenvolvedor</Label>
                   </div>
                 </RadioGroup>
               </div>

@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { api } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import { AuthService } from '@/services/auth';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -27,64 +27,13 @@ export function Login() {
     }
     try {
       setIsLoading(true);
-      const result = await api.login(email, password);
-      if (result.data) {
-        // Fazer login no contexto
-        login(result.data.accessToken, result.data.user || { email });
-        toast.success('Login realizado com sucesso!');
-        navigate('/');
-      } else {
-        toast.error(result.error || 'Erro ao fazer login');
-      }
-    } catch (error) {
-      toast.error('Erro ao fazer login');
-    } finally {
-      setIsLoading(false);
-    }
-  }
+      const result = await AuthService.login({ email, password });
+      login(result.data.accessToken, result.data.user || { email });
 
-  async function handleDemoLogin() {
-    try {
-      setIsLoading(true);
-      // Ativar modo mock
-      setMockMode(true);
-      
-      // Usar credenciais de demo do mock
-      const mockUser = MOCK_USERS['test-user-id'];
-      localStorage.setItem('accessToken', 'mock-access-token');
-      localStorage.setItem('refreshToken', 'mock-refresh-token');
-      
-      login('mock-access-token', mockUser);
-      toast.success('✅ Login de demo ativado!');
+      toast.success('Login realizado com sucesso!');
       navigate('/');
-    } catch (error) {
-      toast.error('Erro ao fazer login de demo');
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (!email || !password) {
-      toast.error('Preencha todos os campos');
-      return;
-    }
-    try {
-      setIsLoading(true);
-      const result = await api.login(email, password);
-      if (result.data) {
-        // Fazer login no contexto
-        login(result.data.accessToken, result.data.user || { email });
-        toast.success('Login realizado com sucesso!');
-        navigate('/');
-      } else {
-        toast.error(result.error || 'Erro ao fazer login');
-      }
-    } catch (error) {
-      toast.error('Erro ao fazer login');
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao fazer login');
     } finally {
       setIsLoading(false);
     }
@@ -162,7 +111,7 @@ export function Login() {
 
               <div className="text-center text-sm">
                 Não tem uma conta?{' '}
-                <Link to="/register" className="text-blue-600 hover:underline">
+                <Link to="/signup" className="text-blue-600 hover:underline">
                   Registre-se
                 </Link>
               </div>
