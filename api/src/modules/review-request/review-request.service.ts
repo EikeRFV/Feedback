@@ -1,5 +1,4 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { DefaultResponse } from 'src/common/dto/default-response.dto';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
 import { ReviewRequestRepository } from './review-request.repository';
 import { CreateReviewRequestDto } from './dto/create-review-request.dto';
@@ -7,13 +6,14 @@ import { ReviewRequestDto } from './dto/review-request.dto.js';
 import { User } from '../users/entities/user.entity';
 import { ReviewRequest, ReviewRequestStatus } from './entities/review-request.entity';
 import { ReviewRequestGateway } from './review-request.gateway';
+import { DefaultResponse } from '@/common/dto/default-response.dto';
 
 @Injectable()
 export class ReviewRequestService {
   constructor(
     private readonly reviewResquestRepository: ReviewRequestRepository,
     private readonly reviewRequestGateway: ReviewRequestGateway
-  ) {}
+  ) { }
 
   async create(createReviewRequestDto: CreateReviewRequestDto, user: User): Promise<DefaultResponse> {
     if (user.id !== createReviewRequestDto.userId) {

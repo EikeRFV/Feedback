@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SearchService } from './search.service.js';
 import { SearchDevsDto, SearchReviewsDto, SearchSolutionsDto } from './dto/search.dto';
@@ -16,6 +16,7 @@ export class SearchController {
   constructor(private readonly searchService: SearchService) { }
 
   @Get('devs')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: PaginatedDto,
     description: 'Lista de desenvolvedores encontrados'
@@ -27,6 +28,7 @@ export class SearchController {
   }
 
   @Get('reviews')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: PaginatedDto,
     description: 'Lista de pedidos de review encontrados'
@@ -38,6 +40,7 @@ export class SearchController {
   }
 
   @Get('solutions')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: PaginatedDto,
     description: 'Lista de soluções encontradas'

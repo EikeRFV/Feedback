@@ -20,9 +20,10 @@ import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from '../../common/decorators/paginated-response.decorator';
-import { PaginationQueryDto, DefaultResponse } from '../../common/dto';
 import { Notification } from '../../common/entities/notification.entity';
 import { JwtAuthGuard } from '../auth/guard/auth.guard';
+import { PaginationQueryDto } from '@/common/dto/pagination-query.dto';
+import { DefaultResponse } from '@/common/dto/default-response.dto';
 
 @ApiTags('notifications')
 @Controller('notifications')
@@ -42,6 +43,7 @@ export class NotificationsController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all notifications for the current user' })
   @ApiPaginatedResponse(Notification)
   async findAll(
@@ -52,6 +54,7 @@ export class NotificationsController {
   }
 
   @Get('unread')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all unread notifications for the current user' })
   @ApiPaginatedResponse(Notification)
   async findUnread(
@@ -62,6 +65,7 @@ export class NotificationsController {
   }
 
   @Patch(':id/read')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Mark a notification as read' })
   @ApiResponse({ status: HttpStatus.OK, type: DefaultResponse })
   @HttpCode(HttpStatus.OK)
@@ -78,6 +82,7 @@ export class NotificationsController {
   }
 
   @Patch('mark-all-read')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Mark all notifications as read' })
   @ApiResponse({ status: HttpStatus.OK, type: DefaultResponse })
   @HttpCode(HttpStatus.OK)
@@ -87,6 +92,7 @@ export class NotificationsController {
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a notification' })
   @ApiResponse({ status: HttpStatus.OK, type: DefaultResponse })
   @HttpCode(HttpStatus.OK)
@@ -104,6 +110,7 @@ export class NotificationsController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete a notification' })
   @ApiResponse({ status: HttpStatus.OK, type: DefaultResponse })
   @HttpCode(HttpStatus.OK)

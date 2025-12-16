@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { DefaultResponse } from 'src/common/dto/default-response.dto';
 import { SolutionRepository } from './solution.repository';
 import { CreateSolutionDto } from './dto/create-solution.dto';
 import { AcceptReviewStatuses } from '../accept-review/entities/accept-review.entity';
@@ -10,6 +9,7 @@ import { ReviewRequestService } from '../review-request/review-request.service';
 import { ReviewRequestStatus } from '../review-request/entities/review-request.entity';
 import { UpdateAcceptReviewDto } from '../accept-review/dto/update-accept-review.dto';
 import { AcceptSolutionDto } from './dto/accept-solution.dto';
+import { DefaultResponse } from '@/common/dto/default-response.dto';
 
 @Injectable()
 export class SolutionService {

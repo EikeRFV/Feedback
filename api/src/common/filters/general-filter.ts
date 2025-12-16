@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from "@nestjs/common";
 import { Request, Response } from "express";
-import { DefaultResponseDto } from "../dto/default-response.dto";
+import { ApiResponseDto } from "../dto/api-response.dto";
 
 export interface ExceptionResponseObject {
   statusCode: Number;
@@ -44,7 +44,7 @@ export class GeneralExceptionFilter implements ExceptionFilter {
         `Erro na requisicao HTTP  `,
       )
 
-      return response.status(statusCode).json(new DefaultResponseDto(statusCode, false, null, message));
+      return response.status(statusCode).json(new ApiResponseDto(statusCode, false, null, message));
     }
 
     const statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -59,6 +59,6 @@ export class GeneralExceptionFilter implements ExceptionFilter {
       'Erro desconhecido'
     );
 
-    return response.status(statusCode).json(new DefaultResponseDto(statusCode, false, null, 'Erro Interno no Servidor'))
+    return response.status(statusCode).json(new ApiResponseDto(statusCode, false, null, 'Erro Interno no Servidor'))
   }
 }

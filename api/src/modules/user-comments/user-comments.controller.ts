@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { UserCommentsService } from './user-comments.service';
 import { CreateUserCommentDto } from './dto/create-user-comment.dto';
 import { UpdateUserCommentDto } from './dto/update-user-comment.dto';
@@ -24,6 +24,7 @@ export class UserCommentsController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: [UserComment],
     description: 'List all comments'
@@ -34,6 +35,7 @@ export class UserCommentsController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: UserComment,
     description: 'Get comment by id'
@@ -44,6 +46,7 @@ export class UserCommentsController {
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: UserComment,
     description: 'Update comment'
@@ -54,6 +57,7 @@ export class UserCommentsController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Delete comment'
   })

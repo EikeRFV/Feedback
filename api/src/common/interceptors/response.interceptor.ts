@@ -1,14 +1,14 @@
 
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { DefaultResponseDto } from '../dto/default-response.dto';
+import { ApiResponseDto } from '../dto/api-response.dto';
 
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, DefaultResponseDto<T>> {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<DefaultResponseDto<T>> {
+export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponseDto<T>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponseDto<T>> {
     return next.handle().pipe(
       map(data => {
-        return new DefaultResponseDto(context.switchToHttp().getResponse().statusCode, true, data, null)
+        return new ApiResponseDto(context.switchToHttp().getResponse().statusCode, true, data, null)
       })
     );
   }

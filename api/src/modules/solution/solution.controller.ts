@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
-import { DefaultResponse } from "src/common/dto/default-response.dto";
 import { CreateSolutionDto } from "./dto/create-solution.dto";
 import { SolutionService } from "./solution.service";
 import { CurrentUser } from "../auth/decorator/current-user.decorator";
@@ -9,6 +8,7 @@ import { AcceptSolutionDto } from "./dto/accept-solution.dto";
 import { UpdateSolutiondDto } from "./dto/update-solution.dto";
 import { SolutionDto } from "./dto/solution.dto";
 import { JwtAuthGuard } from "../auth/guard/auth.guard";
+import { DefaultResponse } from "@/common/dto/default-response.dto";
 
 @Controller('solutions')
 @ApiTags('Solutions')
@@ -32,6 +32,7 @@ export class SolutionController {
   }
 
   @Patch('accept/:id')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: DefaultResponse,
     description: 'Solution accepted successfully'
@@ -49,6 +50,7 @@ export class SolutionController {
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: DefaultResponse,
     description: 'Solution updated successfully'
@@ -63,6 +65,7 @@ export class SolutionController {
   }
 
   @Get('by-review/:reviewId')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: SolutionDto,
     description: 'Get solution by review ID'
@@ -75,6 +78,7 @@ export class SolutionController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: SolutionDto,
     description: 'Get solution by ID'

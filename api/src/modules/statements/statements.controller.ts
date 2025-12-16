@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UseInterceptors, HttpStatus, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { StatementsService } from './statements.service';
 import { CreateStatementDto } from './dto/create-statement.dto';
@@ -24,6 +24,7 @@ export class StatementsController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all statements' })
   @ApiResponse({ status: 200, description: 'Returns all statements' })
   findAll(@Query('userId') userId?: string) {
@@ -31,6 +32,7 @@ export class StatementsController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a statement by id' })
   @ApiResponse({ status: 200, description: 'Returns the found statement' })
   findOne(@Param('id') id: string) {
@@ -39,6 +41,7 @@ export class StatementsController {
 
   @Patch(':id')
   @Roles('admin')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a statement' })
   @ApiResponse({ status: 200, description: 'The statement has been updated' })
   update(
@@ -50,6 +53,7 @@ export class StatementsController {
 
   @Delete(':id')
   @Roles('admin')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete a statement' })
   @ApiResponse({ status: 200, description: 'The statement has been deleted' })
   remove(@Param('id') id: string) {

@@ -1,14 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import type { ReviewRequest } from './entities/review-request.entity';
 import { ReviewRequestService } from './review-request.service';
 import { CreateReviewRequestDto } from './dto/create-review-request.dto';
 import { ReviewRequestDto } from './dto/review-request.dto.js';
-import { DefaultResponse } from 'src/common/dto/default-response.dto';
 import { User } from '../users/entities/user.entity';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
 import { JwtAuthGuard } from '../auth/guard/auth.guard';
+import { DefaultResponse } from '@/common/dto/default-response.dto';
 
 @Controller('review-requests')
 @ApiTags('Review Requests')
@@ -32,6 +32,7 @@ export class ReviewRequestController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: PaginatedDto,
     description: 'List all review requests with pagination'
@@ -44,6 +45,7 @@ export class ReviewRequestController {
   }
 
   @Get('by-user')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: PaginatedDto,
     description: 'List review requests by current user with pagination'
@@ -57,6 +59,7 @@ export class ReviewRequestController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: ReviewRequestDto,
     description: 'Get review request by ID'
@@ -67,6 +70,7 @@ export class ReviewRequestController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: DefaultResponse,
     description: 'Cancel review request'

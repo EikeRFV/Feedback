@@ -1,13 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { CreateSolutionCommentDto } from './dto/create-solution-comment.dto';
 import { UpdateSolutionCommentDto } from './dto/update-solution-comment.dto';
 import { SolutionCommentsService } from './solution-comments.service';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
 import { User } from '../users/entities/user.entity';
-import type { Response } from 'express';
 import { ApiCreatedResponse } from '@nestjs/swagger';
-import { DefaultResponse } from 'src/common/dto/default-response.dto';
 import { SolutionCommentDto } from './dto/solution-comment.dto';
+import { DefaultResponse } from '@/common/dto/default-response.dto';
 
 @Controller('solution_comments')
 export class SolutionCommentsController {
@@ -30,57 +29,49 @@ export class SolutionCommentsController {
   }
 
   @Get(':solutionId')
+  @HttpCode(HttpStatus.OK)
   @ApiCreatedResponse({
     type: [SolutionCommentDto]
   })
-  findAllBySolution(
+  async findAllBySolution(
     @Param('solutionId') solutionId: string,
     @CurrentUser() user: User,
-    @Res() res: Response
   ) {
-    const response = this.solutionCommentsService.findAllBySolution(solutionId, user.id);
-
-    return res.status(200).json(response)
+    return await this.solutionCommentsService.findAllBySolution(solutionId, user.id);
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiCreatedResponse({
     type: [SolutionCommentDto]
   })
   async findOne(
     @Param('id') id: string,
     @CurrentUser() user: User,
-    @Res() res: Response
   ) {
-    const response = await this.solutionCommentsService.findOneById(id, user.id);
-
-    return res.status(200).json(response)
+    return await this.solutionCommentsService.findOneById(id, user.id);
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
     @Body() updateCommentDto: UpdateSolutionCommentDto,
     @CurrentUser() user: User,
-    @Res() res: Response
   ) {
     const updateComment: UpdateSolutionCommentDto = {
       ...updateCommentDto,
       userId: user.id
     }
-    const response = await this.solutionCommentsService.update(id, updateComment);
-
-    res.status(200).json(response)
+    return await this.solutionCommentsService.update(id, updateComment);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   async remove(
     @Param('id') id: string,
     @CurrentUser() user: User,
-    @Res() res: Response
   ) {
-    const response = await this.solutionCommentsService.remove(id, user.id);
-
-    return res.status(200).json(response)
+    return await this.solutionCommentsService.remove(id, user.id);
   }
 }

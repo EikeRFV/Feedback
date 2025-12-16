@@ -5,7 +5,7 @@ import { UpdateSolutionCommentDto } from './dto/update-solution-comment.dto';
 import { SolutionService } from '../solution/solution.service';
 import { AcceptReviewService } from '../accept-review/accept-review.service';
 import { ReviewRequestService } from '../review-request/review-request.service';
-import { DefaultResponse } from 'src/common/dto/default-response.dto';
+import { DefaultResponse } from '@/common/dto/default-response.dto';
 
 @Injectable()
 export class SolutionCommentsService {

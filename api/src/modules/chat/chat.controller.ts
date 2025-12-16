@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatRoomDto, CreateChatMessageDto, UpdateChatMessageDto } from './dto/chat.dto';
 import { User } from '../users/entities/user.entity';
@@ -22,11 +22,13 @@ export class ChatController {
   }
 
   @Get('rooms')
+  @HttpCode(HttpStatus.OK)
   async getRooms(@GetUser() user: User): Promise<ChatRoom[]> {
     return await this.chatService.getRooms(user.id);
   }
 
   @Get('room/:roomId/messages')
+  @HttpCode(HttpStatus.OK)
   async getMessages(
     @Param('roomId') roomId: string,
     @GetUser() user: User,
@@ -46,6 +48,7 @@ export class ChatController {
   }
 
   @Put('message/:messageId')
+  @HttpCode(HttpStatus.OK)
   async updateMessage(
     @Param('messageId') messageId: string,
     @Body() updateMessageDto: UpdateChatMessageDto,
@@ -55,6 +58,7 @@ export class ChatController {
   }
 
   @Delete('message/:messageId')
+  @HttpCode(HttpStatus.OK)
   async deleteMessage(
     @Param('messageId') messageId: string,
     @GetUser() user: User
