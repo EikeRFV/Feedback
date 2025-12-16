@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Code2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { AuthService } from '@/services/auth';
+import { AuthService } from '@/api/services/auth';
+import { ApiError } from '@/api/errors/api-error';
 
 type RoleId = 1 | 2;
 
@@ -70,8 +71,12 @@ export function Signup() {
 
       toast.success('Conta criada com sucesso! Faça login para continuar.');
       navigate('/login');
-    } catch (error: any) {
-      toast.error(error.message || 'Erro ao criar conta');
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      }
+
+      toast.error('Erro ao criar conta');
     } finally {
       setIsLoading(false);
     }

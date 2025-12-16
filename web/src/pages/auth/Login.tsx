@@ -8,7 +8,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
-import { AuthService } from '@/services/auth';
+import { AuthService } from '@/api/services/auth';
+import { ApiError } from '@/api/errors/api-error';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -32,8 +33,12 @@ export function Login() {
 
       toast.success('Login realizado com sucesso!');
       navigate('/');
-    } catch (error: any) {
-      toast.error(error.message || 'Erro ao fazer login');
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      }
+
+      toast.error('Erro ao fazer login');
     } finally {
       setIsLoading(false);
     }
