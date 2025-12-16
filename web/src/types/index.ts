@@ -11,31 +11,27 @@ export interface User {
   reviewCount: number;
   solutionCount: number;
   memberSince: string;
+  balance?: number;
   location?: string;
   available?: boolean;
   hourlyRate?: number;
 }
 
-// Review Request types
 export interface ReviewRequest {
   id: string;
   title: string;
   description: string;
-  repositoryUrl?: string;
   languages: string[];
-  price: number;
-  dueDate?: string;
-  status: 'open' | 'in_progress' | 'completed' | 'closed';
+  budget: number;
+  status: string;
+  repositoryUrl: string;
+  attachments: { id: string; name: string; url: string }[];
   createdAt: string;
   updatedAt: string;
-  author: {
-    id: string;
-    name: string;
-    avatar?: string;
-    rating: number;
-  };
-  attachments?: Attachment[];
-  solutionCount: number;
+  completedAt?: string;
+  client: User;
+  assignedDev: User | null;
+  solutionsCount: number;
 }
 
 export interface Attachment {
