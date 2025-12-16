@@ -172,11 +172,13 @@ class ApiService {
     }
 
     if (endpoint === '/review-requests' && method === 'GET') {
+
       return { data: MOCK_REVIEW_REQUESTS as T };
     }
 
     if (endpoint === '/review-requests/my-requests' && method === 'GET') {
       const myRequests = MOCK_REVIEW_REQUESTS.filter(r => r.client.id === currentUser?.id);
+      console.log(currentUser?.id)
       return { data: myRequests as T };
     }
 
@@ -196,7 +198,7 @@ class ApiService {
           title: request.title,
           description: request.description,
           repositoryUrl: request.repositoryUrl,
-          languages: request.technologies || [],
+          languages: request.languages || [],
           price: request.budget || 0,
           status: request.status,
           createdAt: request.createdAt,
@@ -216,13 +218,22 @@ class ApiService {
       const parsedBody = typeof body === 'string' ? JSON.parse(body) : body;
       const newRequest = {
         id: 'request-' + Date.now(),
-        ...parsedBody,
+        title: parsedBody.title,
+        description: parsedBody.description,
+        budget: Number(parsedBody.budget),
+        languages: Array.isArray(parsedBody.language)
+          ? parsedBody.language
+          : [parsedBody.language],
+        repositoryUrl: parsedBody.repositoryUrl,
         status: 'pending',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         client: currentUser || MOCK_USERS['test-user-id'],
+        assignedDev: null,
         solutionsCount: 0,
+        attachments: [],
       };
+
       MOCK_REVIEW_REQUESTS.push(newRequest);
       return { data: newRequest as T };
     }

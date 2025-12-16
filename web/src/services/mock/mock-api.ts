@@ -1,4 +1,6 @@
-export const MOCK_USERS = {
+import type { ReviewRequest, User } from "@/types";
+
+export const MOCK_USERS: Record<string, User> = {
   'test-user-id': {
     id: 'test-user-id',
     name: 'João Cliente',
@@ -77,12 +79,13 @@ export const MOCK_USERS = {
   },
 };
 
-export const MOCK_REVIEW_REQUESTS = [
+
+export const MOCK_REVIEW_REQUESTS: ReviewRequest[] = [
   {
     id: 'request-1',
     title: 'Review de código React - E-commerce',
     description: 'Preciso de uma revisão completa do meu projeto de e-commerce em React. Tenho problemas de performance e gostaria de feedback sobre a arquitetura.',
-    technologies: ['React', 'TypeScript', 'Redux'],
+    languages: ['React', 'TypeScript', 'Redux'],
     budget: 500,
     status: 'in_progress',
     repositoryUrl: 'https://github.com/exemplo/ecommerce-react',
@@ -100,7 +103,7 @@ export const MOCK_REVIEW_REQUESTS = [
     id: 'request-2',
     title: 'Análise de API REST Node.js',
     description: 'Desenvolvi uma API em Node.js e Express. Preciso de feedback sobre segurança, estrutura e boas práticas.',
-    technologies: ['Node.js', 'Express', 'MongoDB'],
+    languages: ['Node.js', 'Express', 'MongoDB'],
     budget: 350,
     status: 'pending',
     repositoryUrl: 'https://github.com/exemplo/api-nodejs',
@@ -108,13 +111,14 @@ export const MOCK_REVIEW_REQUESTS = [
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     client: MOCK_USERS['test-user-id'],
+    assignedDev: null,
     solutionsCount: 5,
   },
   {
     id: 'request-3',
     title: 'Review de aplicação Vue.js',
     description: 'Aplicação Vue 3 com Composition API. Gostaria de melhorar a organização dos componentes.',
-    technologies: ['Vue.js', 'Vuex', 'TypeScript'],
+    languages: ['Vue.js', 'Vuex', 'TypeScript'],
     budget: 400,
     status: 'completed',
     repositoryUrl: 'https://github.com/exemplo/app-vue',
@@ -132,12 +136,15 @@ export const MOCK_REVIEW_REQUESTS = [
     id: 'request-4',
     title: 'Review de performance em React Native',
     description: 'App mobile com problemas de performance. Preciso identificar gargalos.',
-    technologies: ['React Native', 'Expo', 'TypeScript'],
+    languages: ['React Native', 'Expo', 'TypeScript'],
     budget: 600,
     status: 'pending',
+    repositoryUrl: '',        // campo obrigatório, pode deixar vazio se não houver
+    attachments: [],
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     client: MOCK_USERS['test-user-id'],
+    assignedDev: null,
     solutionsCount: 1,
   },
 ];
