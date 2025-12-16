@@ -53,11 +53,4 @@ export class Solution extends Model<SolutionAttributes, SolutionCreationAttribut
     type: DataType.BOOLEAN,
   })
   acceptedSolution: boolean;
-
-  @ForeignKey(() => ReviewRequest)
-  @Column
-  reviewRequestId: string;
-
-  @BelongsTo(() => ReviewRequest)
-  reviewRequest!: ReviewRequest;
 }

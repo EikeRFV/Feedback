@@ -1,5 +1,6 @@
+import { Solution } from '@/modules/solution/entities/solution.entity';
 import { Optional } from 'sequelize';
-import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript'
+import { BelongsTo, Column, DataType, Default, ForeignKey, HasOne, Model, PrimaryKey, Table } from 'sequelize-typescript'
 import { AcceptReviewStatus } from 'src/common/entities/accept-review-status.entity';
 import { ReviewRequest } from 'src/modules/review-request/entities/review-request.entity';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -51,4 +52,8 @@ export class AcceptReview extends Model<AcceptReviewAttributes, AcceptReviewAttr
 
   @BelongsTo(() => AcceptReviewStatus)
   status: AcceptReviewStatus
+
+
+  @HasOne(() => Solution)
+  solution: Solution;
 }

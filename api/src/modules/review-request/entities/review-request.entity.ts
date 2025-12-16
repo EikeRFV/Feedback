@@ -6,7 +6,6 @@ import {
   Default,
   ForeignKey,
   HasMany,
-  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -15,7 +14,6 @@ import { Language, Languages } from 'src/common/entities/language.entity';
 import { PaymentMethods } from 'src/common/entities/payment-method.entity';
 import { ReviewStatus } from 'src/common/entities/review-status.entity';
 import { AcceptReview } from 'src/modules/accept-review/entities/accept-review.entity';
-import { Solution } from 'src/modules/solution/entities/solution.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 
 export enum ReviewRequestStatus {
@@ -96,7 +94,4 @@ export class ReviewRequest extends Model<ReviewRequestAttributes, ReviewRequestC
 
   @HasMany(() => AcceptReview)
   acceptedBy: AcceptReview[];
-
-  @HasOne(() => Solution)
-  solution: Solution;
 }
