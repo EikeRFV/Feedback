@@ -1,21 +1,36 @@
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+import { DeveloperInfoCard } from '@/components/DeveloperInfoCard';
 import { api } from '@/services/mock/api';
-import { Loader2, Star } from 'lucide-react';
 
 interface Developer {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
-  rating: number;
   avatar?: string;
+  bio?: string;
+  languages?: string[];
+  rating: number;
+  reviewCount: number;
+  solutionCount: number;
+  location: string;
+  hourlyRate: number;
+  memberSince: string;
 }
 
 export function Developers() {
   const [developers, setDevelopers] = useState<Developer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState("")
+
+
+  const filteredDevelopers = developers.filter((dev) => {
+    const fullName = `${dev.name}`.toLowerCase();
+    const languages = dev.languages?.map((lang) => lang.toLowerCase()) || [];
+    const query = search.toLowerCase();
+
+    return fullName.includes(query) || languages.some((lang) => lang.includes(query));
+  });
 
   useEffect(() => {
     const loadDevelopers = async () => {
@@ -37,26 +52,23 @@ export function Developers() {
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Encontre Desenvolvedores</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {developers.map((dev) => (
-          <Card key={dev.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle>{dev.firstName} {dev.lastName}</CardTitle>
-                  <CardDescription>{dev.email}</CardDescription>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span className="font-semibold">{dev.rating}</span>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full cursor-pointer">Solicitar Review</Button>
-            </CardContent>
-          </Card>
+      <input
+        type="text"
+        placeholder="Buscar por nome ou linguagem..."
+        className="w-full mb-6 p-2 border rounded-md"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {filteredDevelopers.map((dev) => (
+          <DeveloperInfoCard {...dev} key={dev.name} />
         ))}
+        {filteredDevelopers.length === 0 && (
+          <p className="col-span-full text-center text-muted-foreground">
+            Nenhum desenvolvedor encontrado.
+          </p>
+        )}
       </div>
     </div>
   );

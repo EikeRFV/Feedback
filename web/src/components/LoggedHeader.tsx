@@ -1,11 +1,27 @@
 import { Code, Home, MessageSquare, Search, User } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { NotificationsPopover } from "@/pages/NotificationsPopover";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
+import { NotificationsPopover } from "./NotificationsPopover";
+import { useEffect, useState } from "react";
+import type { User as UserProfile } from "@/types";
+import { api } from "@/services/mock/api";
 
 export function LoggedHeader() {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const result = await api.getCurrentUser();
+      console.log(result.data)
+      if (result.data) {
+        setProfile(result.data as UserProfile);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
@@ -54,7 +70,6 @@ export function LoggedHeader() {
           </NavLink>
         </nav>
 
-        {/* Right side */}
         <div className="flex items-center gap-4">
           <NotificationsPopover />
 
@@ -68,7 +83,7 @@ export function LoggedHeader() {
                 <User className="h-8 w-8 text-zinc-400" fill="currentColor" stroke="none" />
               </AvatarFallback>
             </Avatar>
-            <span className="hidden text-sm font-medium sm:inline-block">João Cliente</span>
+            <span className="hidden text-sm font-medium sm:inline-block">{profile?.name}</span>
           </div>
         </div>
       </div>

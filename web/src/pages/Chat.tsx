@@ -2,14 +2,24 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { api } from '@/services/mock/api';
+import { ChatService } from '@/services/chat';
 import { Loader2, Send } from 'lucide-react';
+import { api } from '@/services/mock/api';
 
 interface ChatRoom {
   id: string;
-  name: string;
-  lastMessage: string;
-  participants: number;
+  title: string;
+  participants: any[];
+  unreadCount: number;
+  updatedAt: string;
+  relatedRequest?: string;
+  lastMessage?: {
+    content: string;
+    createdAt: string;
+    author: {
+      name: string;
+    };
+  };
 }
 
 interface Message {
@@ -57,12 +67,10 @@ export function Chat() {
   const sendMessage = async () => {
     if (!messageInput.trim() || !selectedRoom) return;
 
-    const result = await api.post(`/chat/room/${selectedRoom}/messages`, {
-      content: messageInput,
-    });
+    const result = await ChatService.sendMessage(selectedRoom, { content: messageInput });
 
     if (result.data) {
-      setMessages([...messages, result.data as Message]);
+      setMessages((prev) => [...prev, result.data as Message]);
       setMessageInput('');
     }
   };
@@ -72,9 +80,9 @@ export function Chat() {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-4 p-8 h-screen">
-      <div className="col-span-1 border-r">
-        <h2 className="text-xl font-bold mb-4">Conversas</h2>
+    <div className="grid grid-cols-3 gap-4 p-8 h-fit">
+      <div className="col-span-1 border-r px-6">
+        <h2 className="text-3xl font-bold mb-6">Conversas</h2>
         <div className="space-y-2">
           {rooms.map((room) => (
             <Card
@@ -83,15 +91,17 @@ export function Chat() {
               onClick={() => setSelectedRoom(room.id)}
             >
               <CardContent className="pt-4">
-                <p className="font-semibold">{room.name}</p>
-                <p className="text-sm truncate opacity-70">{room.lastMessage}</p>
+                <p className="font-semibold">{room.title}</p>
+                <p className="text-sm truncate opacity-70">
+                  {room.lastMessage?.content}
+                </p>
               </CardContent>
             </Card>
           ))}
         </div>
       </div>
 
-      <div className="col-span-2 flex flex-col">
+      <div className="col-span-2 flex flex-col px-6">
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 border rounded-lg p-4">
           {messages.map((msg) => (
             <div key={msg.id} className="flex flex-col">

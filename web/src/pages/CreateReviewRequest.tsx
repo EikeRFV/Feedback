@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { FormField } from '@/components/FormField';
-import { api } from '@/services/mock/api';
+// replaced mock api with ReviewRequestsService usage below
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
+import { ReviewRequestsService } from '@/services/review-request';
 
 interface CreateReviewFormData {
   title: string;
   description: string;
   budget: string;
-  language: string;
+  language: string[];
   repositoryUrl: string;
 }
 
@@ -23,17 +24,28 @@ interface CreateReviewFormData {
 export function CreateReviewRequest() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Partial<CreateReviewFormData>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof CreateReviewFormData, string>>>({});
   const [formData, setFormData] = useState<CreateReviewFormData>({
     title: '',
     description: '',
     budget: '',
-    language: '',
+    language: [],
     repositoryUrl: '',
   });
 
+  const availableLanguages = [
+    { value: 'javascript', label: 'JavaScript' },
+    { value: 'typescript', label: 'TypeScript' },
+    { value: 'python', label: 'Python' },
+    { value: 'java', label: 'Java' },
+    { value: 'csharp', label: 'C#' },
+    { value: 'cpp', label: 'C++' },
+    { value: 'go', label: 'Go' },
+    { value: 'rust', label: 'Rust' },
+  ];
+
   const validateForm = (): boolean => {
-    const newErrors: Partial<CreateReviewFormData> = {};
+    const newErrors: Partial<Record<keyof CreateReviewFormData, string>> = {};
 
     if (!formData.title.trim()) {
       newErrors.title = 'Título é obrigatório';
@@ -53,8 +65,10 @@ export function CreateReviewRequest() {
       newErrors.budget = 'Orçamento mínimo é $10';
     }
 
-    if (!formData.language) {
-      newErrors.language = 'Linguagem é obrigatória';
+    if (formData.language.length === 0) {
+      newErrors.language = 'Selecione pelo menos uma linguagem';
+    } else if (formData.language.length > 5) {
+      newErrors.language = 'Máximo de 5 linguagens permitidas';
     }
 
     if (!formData.repositoryUrl.trim()) {
@@ -65,6 +79,36 @@ export function CreateReviewRequest() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleAddLanguage = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (!value) return;
+
+    if (formData.language.includes(value)) return;
+
+    if (formData.language.length >= 5) {
+      setErrors(prev => ({ ...prev, language: 'Máximo de 5 linguagens atingido' }));
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      language: [...prev.language, value]
+    }));
+
+    if (errors.language) {
+      setErrors(prev => ({ ...prev, language: undefined }));
+    }
+
+    e.target.value = "";
+  };
+
+  const handleRemoveLanguage = (langToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      language: prev.language.filter(l => l !== langToRemove)
+    }));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -91,7 +135,7 @@ export function CreateReviewRequest() {
     }
 
     setIsLoading(true);
-    const result = await api.post('/review-requests', {
+    const result = await ReviewRequestsService.create({
       title: formData.title,
       description: formData.description,
       budget: Number(formData.budget),
@@ -160,25 +204,45 @@ export function CreateReviewRequest() {
             />
 
             <div className="space-y-2">
-              <Label htmlFor="language">Linguagem de Programação *</Label>
+              <Label htmlFor="language">Linguagens de Programação (Máx: 5) *</Label>
+
               <select
                 id="language"
-                name="language"
-                value={formData.language}
-                onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.language ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                onChange={handleAddLanguage}
+                disabled={formData.language.length >= 5}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.language ? 'border-red-500' : 'border-gray-300'} disabled:bg-gray-100 disabled:cursor-not-allowed`}
+                defaultValue=""
               >
-                <option value="">Selecione uma linguagem</option>
-                <option value="javascript">JavaScript</option>
-                <option value="typescript">TypeScript</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-                <option value="csharp">C#</option>
-                <option value="cpp">C++</option>
-                <option value="go">Go</option>
-                <option value="rust">Rust</option>
+                <option value="" disabled>Adicionar linguagem...</option>
+                {availableLanguages.map(lang => (
+                  <option
+                    key={lang.value}
+                    value={lang.value}
+                    disabled={formData.language.includes(lang.value)}
+                  >
+                    {lang.label}
+                  </option>
+                ))}
               </select>
+
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.language.map(lang => {
+                  const label = availableLanguages.find(l => l.value === lang)?.label || lang;
+                  return (
+                    <span key={lang} className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">
+                      {label}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveLanguage(lang)}
+                        className="hover:text-blue-600 focus:outline-none"
+                      >
+                        <X size={14} />
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+
               {errors.language && (
                 <p className="text-sm font-medium text-red-500">{errors.language}</p>
               )}

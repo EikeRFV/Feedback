@@ -2,21 +2,23 @@ import { useEffect, useState } from 'react';
 import type { DataTableColumn, DataTableAction } from '@/components/DataTable';
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
+import { ReviewRequestsService } from '@/services/review-request';
+import { Code, Plus } from 'lucide-react';
+import { RedirectButton } from '@/components/RedirectButton';
 import { api } from '@/services/mock/api';
-import { Code } from 'lucide-react';
 
 interface ReviewRequest {
   id: string;
   title: string;
   description: string;
   budget: number;
-  language: string;
+  languages: string[];
   status: string;
   author?: { name: string };
   createdAt: string;
 }
 
-export function ReviewRequests() {
+export function ReviewRewquests() {
   const [requests, setRequests] = useState<ReviewRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,10 +29,12 @@ export function ReviewRequests() {
         setRequests(Array.isArray(result.data) ? result.data : []);
       }
       setIsLoading(false);
+
     };
 
     loadRequests();
   }, []);
+
 
   const columns: DataTableColumn<ReviewRequest>[] = [
     {
@@ -46,10 +50,31 @@ export function ReviewRequests() {
       ),
     },
     {
-      key: 'language',
+      key: 'languages',
       label: 'Linguagem',
       sortable: true,
-      render: (value) => <Badge variant="outline">{value}</Badge>,
+      render: (value: string[]) => (
+        <div className="flex flex-wrap gap-1">
+          {value.map((lang) => (
+            <Badge
+              variant="outline"
+              key={lang}
+            >
+              {lang}
+            </Badge>
+          ))}
+        </div>
+      ),
+    },
+    {
+      key: 'description',
+      label: 'Descricao',
+      sortable: true,
+      render: (value) => (
+        <Badge variant="outline" className="truncate max-w-xs">
+          {value}
+        </Badge>
+      ),
     },
     {
       key: 'budget',
@@ -89,14 +114,17 @@ export function ReviewRequests() {
 
   return (
     <div className="p-8">
+      <div className='flex justify-between mb-6'>
+        <h2 className="text-3xl font-bold">Review Requests</h2>
+        <RedirectButton redirectPage='/review-requests/create' icon={Plus} text='Criar Review Request' />
+      </div>
       <DataTable<ReviewRequest>
         columns={columns}
         data={requests}
         actions={actions}
         isLoading={isLoading}
-        searchFields={['title', 'description', 'language']}
+        searchFields={['title', 'description', 'languages']}
         itemsPerPage={10}
-        title="Solicitações de Review"
       />
     </div>
   );

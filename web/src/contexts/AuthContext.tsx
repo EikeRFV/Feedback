@@ -5,6 +5,7 @@ import {
   type ReactNode
 } from "react"
 import { UsersService } from "@/services/users"
+import { api } from "@/services/mock/api"
 
 type AuthContextData = {
   token: string | null
@@ -33,11 +34,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (storedToken) {
         setToken(storedToken)
 
-        const response = await UsersService.me()
+        const response = await api.getCurrentUser()
         if (response.data) {
           setUser(response.data)
         }
       }
+
       setIsLoading(false)
     }
 
