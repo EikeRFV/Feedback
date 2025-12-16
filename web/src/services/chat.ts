@@ -18,7 +18,7 @@ export const ChatService = {
 
 
   sendMessage(roomId: string, data: any) {
-    return api.post(`/chat/room/${roomId}/message`, data);
+    return api.post(`/chat/room/${roomId}/messages`, data);
   },
 
 
