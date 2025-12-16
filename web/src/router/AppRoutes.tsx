@@ -10,7 +10,6 @@ import { MyReviews } from "@/pages/MyReviews";
 import { Chat } from "@/pages/Chat";
 import { Profile } from "@/pages/Profile";
 import { MyRequests } from "@/pages/MyRequests";
-import { Solutions } from "@/pages/Solutions";
 import { CreateReviewRequest } from "@/pages/CreateReviewRequest";
 import { PublicRoutes } from "./PublicRoutes";
 import { ReviewRewquests } from "@/pages/ReviewRequests";
@@ -34,7 +33,6 @@ export function AppRoutes() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/my-requests" element={<MyRequests />} />
-          <Route path="/solutions" element={<Solutions />} />
         </Route>
       </Route>
     </Routes >
