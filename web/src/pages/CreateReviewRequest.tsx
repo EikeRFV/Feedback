@@ -7,7 +7,7 @@ import { FormField } from '@/components/FormField';
 // replaced mock api with ReviewRequestsService usage below
 import { toast } from 'sonner';
 import { Loader2, X } from 'lucide-react';
-import { ReviewRequestsService } from '@/services/review-request';
+import { api } from '@/api/mock/api';
 
 interface CreateReviewFormData {
   title: string;
@@ -135,7 +135,7 @@ export function CreateReviewRequest() {
     }
 
     setIsLoading(true);
-    const result = await ReviewRequestsService.create({
+    const result = await api.post('/review-requests', {
       title: formData.title,
       description: formData.description,
       budget: Number(formData.budget),
