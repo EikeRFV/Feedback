@@ -29,7 +29,10 @@ export async function seed(knex: Knex): Promise<void> {
       password: passwordHash,
       role_id: 2,
       active: true,
-      dev_status_id: 1
+      dev_status_id: 1,
+      avatar: null,
+      bio: 'Sou apenas um dev absurdo de bom',
+      rating: 5.0,
     },
     {
       id: clientId,
@@ -39,7 +42,10 @@ export async function seed(knex: Knex): Promise<void> {
       password: passwordHash,
       role_id: 1,
       active: true,
-      dev_status_id: null
+      dev_status_id: null,
+      avatar: null,
+      bio: null,
+      rating: 5.0,
     }
   ]);
 

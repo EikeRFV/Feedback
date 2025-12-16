@@ -10,6 +10,9 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('role_id').notNullable().unsigned();
     table.boolean('active').notNullable().defaultTo(true);
     table.integer('dev_status_id').unsigned()
+    table.string('avatar')
+    table.string('bio')
+    table.float('rating').defaultTo(5.0)
     table.timestamps(true, true);
 
     table.foreign('role_id').references('roles.id')
