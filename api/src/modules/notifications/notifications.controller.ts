@@ -1,12 +1,12 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  UseGuards, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
   ForbiddenException,
   Query,
   ParseUUIDPipe,
@@ -16,19 +16,19 @@ import {
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from '../../common/decorators/paginated-response.decorator';
 import { PaginationQueryDto, DefaultResponse } from '../../common/dto';
 import { Notification } from '../../common/entities/notification.entity';
+import { JwtAuthGuard } from '../auth/guard/auth.guard';
 
 @ApiTags('notifications')
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
 export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) {}
+  constructor(private readonly notificationsService: NotificationsService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new notification' })
@@ -91,7 +91,7 @@ export class NotificationsController {
   @ApiResponse({ status: HttpStatus.OK, type: DefaultResponse })
   @HttpCode(HttpStatus.OK)
   async update(
-    @Param('id', ParseUUIDPipe) id: string, 
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateNotificationDto: UpdateNotificationDto,
     @GetUser() user: User,
   ): Promise<DefaultResponse> {

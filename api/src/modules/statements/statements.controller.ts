@@ -3,17 +3,17 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { StatementsService } from './statements.service';
 import { CreateStatementDto } from './dto/create-statement.dto';
 import { UpdateStatementDto } from './dto/update-statement.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { AuditInterceptor } from '../audit/audit.interceptor';
+import { RolesGuard } from '../auth/guard/roles.guard';
+import { JwtAuthGuard } from '../auth/guard/auth.guard';
 
 @ApiTags('Statements')
 @Controller('statements')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UseInterceptors(AuditInterceptor)
 export class StatementsController {
-  constructor(private readonly statementsService: StatementsService) {}
+  constructor(private readonly statementsService: StatementsService) { }
 
   @Post()
   @Roles('admin')

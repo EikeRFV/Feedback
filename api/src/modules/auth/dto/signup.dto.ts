@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayMinSize,
+  IsArray,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -8,6 +10,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { Languages } from 'src/common/entities/language.entity';
 import { DevStatuses, UserRole } from 'src/modules/users/entities/user.entity';
 
 export class SignupDto {
@@ -42,6 +45,12 @@ export class SignupDto {
   @IsEnum(UserRole, { message: "role must be 1 (Client) or 2 (Developer)" })
   @ApiProperty({ enum: UserRole })
   roleId: UserRole;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsEnum(Languages, { each: true })
+  @ApiProperty({ type: [Number], example: [1, 3, 6], minItems: 1 })
+  languages: number[]
 
   @IsOptional()
   @IsNumber()

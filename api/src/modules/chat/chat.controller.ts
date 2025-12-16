@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { ChatService } from './chat.service';
 import { CreateChatRoomDto, CreateChatMessageDto, UpdateChatMessageDto } from './dto/chat.dto';
 import { User } from '../users/entities/user.entity';
@@ -7,11 +6,12 @@ import { GetUser } from '../auth/decorator/get-user.decorator';
 import { ChatRoom } from './entities/chat-room.entity';
 import { ChatMessage } from './entities/chat-message.entity';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
+import { JwtAuthGuard } from '../auth/guard/auth.guard';
 
 @Controller('chat')
 @UseGuards(JwtAuthGuard)
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(private readonly chatService: ChatService) { }
 
   @Post('room')
   async createRoom(

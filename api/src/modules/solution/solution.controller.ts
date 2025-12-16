@@ -5,11 +5,10 @@ import { CreateSolutionDto } from "./dto/create-solution.dto";
 import { SolutionService } from "./solution.service";
 import { CurrentUser } from "../auth/decorator/current-user.decorator";
 import { User } from "../users/entities/user.entity";
-import type { Response } from "express";
 import { AcceptSolutionDto } from "./dto/accept-solution.dto";
 import { UpdateSolutiondDto } from "./dto/update-solution.dto";
 import { SolutionDto } from "./dto/solution.dto";
-import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guard/auth.guard";
 
 @Controller('solutions')
 @ApiTags('Solutions')
@@ -76,7 +75,7 @@ export class SolutionController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ 
+  @ApiOkResponse({
     type: SolutionDto,
     description: 'Get solution by ID'
   })

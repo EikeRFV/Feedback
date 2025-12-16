@@ -5,16 +5,18 @@ import { StatementsController } from './statements.controller';
 import { Statement } from '../../common/entities/statement.entity';
 import { AuditModule } from '../audit/audit.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { UsersModule } from '../users/users.module';
 import { StatementNotificationsService } from './statement-notifications.service';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([Statement]),
-    AuditModule,
-    NotificationsModule,
-  ],
-  controllers: [StatementsController],
-  providers: [StatementsService, StatementNotificationsService],
-  exports: [StatementsService],
+	imports: [
+		SequelizeModule.forFeature([Statement]),
+		AuditModule,
+		NotificationsModule,
+		UsersModule,
+	],
+	controllers: [StatementsController],
+	providers: [StatementsService, StatementNotificationsService],
+	exports: [StatementsService],
 })
-export class StatementsModule {}
+export class StatementsModule { }

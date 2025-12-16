@@ -2,9 +2,9 @@ import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnectio
 import { Server, Socket } from 'socket.io';
 import { Injectable, UseGuards } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { ChatRoom } from './entities/chat-room.entity';
 import { ChatMessage } from './entities/chat-message.entity';
+import { JwtAuthGuard } from '../auth/guard/auth.guard';
 
 @Injectable()
 @WebSocketGateway({

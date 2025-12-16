@@ -3,15 +3,15 @@ import { UserCommentsService } from './user-comments.service';
 import { CreateUserCommentDto } from './dto/create-user-comment.dto';
 import { UpdateUserCommentDto } from './dto/update-user-comment.dto';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { UserComment } from './entities/user-comment.entity';
+import { JwtAuthGuard } from '../auth/guard/auth.guard';
 
 @Controller('user-comments')
 @ApiTags('User Comments')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class UserCommentsController {
-  constructor(private readonly userCommentsService: UserCommentsService) {}
+  constructor(private readonly userCommentsService: UserCommentsService) { }
 
   @Post()
   @ApiCreatedResponse({

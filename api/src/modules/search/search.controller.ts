@@ -1,12 +1,12 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { SearchService } from './search.service.js';
 import { SearchDevsDto, SearchReviewsDto, SearchSolutionsDto } from './dto/search.dto';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
 import { UserResponseDto } from '../users/dto/response-user.dto';
 import { ReviewRequestDto } from '../review-request/dto/review-request.dto';
 import { SolutionDto } from '../solution/dto/solution.dto';
+import { JwtAuthGuard } from '../auth/guard/auth.guard.js';
 
 @Controller('search')
 @ApiTags('Search')

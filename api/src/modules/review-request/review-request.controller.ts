@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import type { ReviewRequest } from './entities/review-request.entity';
 import { ReviewRequestService } from './review-request.service';
@@ -7,8 +7,8 @@ import { ReviewRequestDto } from './dto/review-request.dto.js';
 import { DefaultResponse } from 'src/common/dto/default-response.dto';
 import { User } from '../users/entities/user.entity';
 import { CurrentUser } from '../auth/decorator/current-user.decorator';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
+import { JwtAuthGuard } from '../auth/guard/auth.guard';
 
 @Controller('review-requests')
 @ApiTags('Review Requests')
