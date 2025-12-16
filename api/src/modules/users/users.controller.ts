@@ -38,6 +38,21 @@ export class UsersController {
     return res.status(200).json(users)
   }
 
+
+  @Get('developers')
+  @ApiPaginatedResponse(UserResponseDto)
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiQuery({ name: 'offset', required: false, type: Number, example: 0 })
+  async findAllDevs(
+    @Query('limit') limit = 10,
+    @Query('offset') offset = 0,
+    @Res() res: Response
+  ) {
+    const users = await this.usersService.findAllDevs(limit, offset)
+
+    return res.status(200).json(users)
+  }
+
   @UseGuards(JwtAuthGuard)
   @Put()
   @ApiOkResponse({

@@ -81,6 +81,21 @@ export class UsersService {
     }
   }
 
+
+  async findAllDevs(limit: number, offset: number): Promise<PaginatedDto<UserWithLanguages>> {
+    const { total, results } = await this.usersRepository.findAllDevs(limit, offset)
+
+
+    const resultsTyped = results as unknown as UserWithLanguages[];
+
+    return {
+      limit,
+      offset,
+      total,
+      results: resultsTyped
+    }
+  }
+
   async update(updateUserDto: UpdateUserDto): Promise<DefaultResponse> {
     const [affectedRows] = await this.usersRepository.update(updateUserDto)
     if (affectedRows === 0) {

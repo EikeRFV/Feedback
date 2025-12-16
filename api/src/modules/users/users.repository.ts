@@ -79,6 +79,26 @@ export class UsersRepository {
     }
   }
 
+  async findAllDevs(limit: number, offset: number) {
+    const { count, rows } = await User.findAndCountAll({
+      limit,
+      offset,
+      where: { active: true, roleId: 2 },
+      include: [
+        {
+          model: Language,
+          through: { attributes: [] },
+        },
+      ],
+      attributes: { exclude: ['password'] }
+    })
+
+    return {
+      total: count,
+      results: rows
+    }
+  }
+
   async update(updateUserDto: UpdateUserDto) {
     return await User.update(updateUserDto, {
       where: {
