@@ -16,7 +16,7 @@ interface DeveloperInfoCardProps {
   location: string;
   hourlyRate: number;
 }
-console.log()
+
 export function DeveloperInfoCard({
   name,
   avatar,
