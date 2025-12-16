@@ -6,7 +6,7 @@ export function AppLayout() {
   return (
     <div className="flex flex-col min-h-screen">
       <LoggedHeader />
-      <main className="grow">
+      <main className="grow px-44 bg-gray-50">
         <Outlet />
       </main>
       <Footer />

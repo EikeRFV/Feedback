@@ -1,48 +1,72 @@
-import { Bell, Home, MessageSquare, Search, User } from "lucide-react";
+import { Code, Home, MessageSquare, Search, User } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { NotificationsPopover } from "@/pages/NotificationsPopover";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { NavLink } from "react-router-dom";
 
 export function LoggedHeader() {
+  const navigate = useNavigate()
+
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-indigo-600 text-white">
-            <span className="font-mono text-sm font-bold">&lt;/&gt;</span>
-          </div>
+          <Code className="h-6 w-6 text-indigo-600" strokeWidth={3} />
           <span className="text-lg font-semibold">Hotfix</span>
         </div>
 
-        <nav className="hidden items-center gap-6 md:flex">
-          <NavLink to="/dashboard" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
-            <Home className="h-4 w-4" />
-            <span>Dashboard</span>
+        <nav className="hidden items-center gap-2 md:flex">
+          <NavLink to="/dashboard" className={({ isActive }) => (
+            isActive ? 'bg-accent text-accent-foreground rounded-md' : ''
+          )}>
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 cursor-pointer">
+              <Home className="h-4 w-4" />
+              <span>Dashboard</span>
+            </Button>
           </NavLink>
-          <NavLink to="/my-reviews" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
-            <Search className="h-4 w-4" />
-            <span>Reviews</span>
+
+          <NavLink to="/review-requests" className={({ isActive }) => (
+            isActive ? 'bg-accent text-accent-foreground rounded-md' : ''
+          )}>
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 cursor-pointer">
+              <Search className="h-4 w-4" />
+              <span>Reviews</span>
+            </Button>
           </NavLink>
-          <NavLink to="/developers" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
-            <User className="h-4 w-4" />
-            <span>Buscar Devs</span>
+
+          <NavLink to="/developers" className={({ isActive }) => (
+            isActive ? 'bg-accent text-accent-foreground rounded-md' : ''
+          )}>
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 cursor-pointer">
+              <User className="h-4 w-4" />
+              <span>Buscar Devs</span>
+            </Button>
           </NavLink>
-          <NavLink to="/chat" className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
-            <MessageSquare className="h-4 w-4" />
-            <span>Chat</span>
+
+          <NavLink to="/chat" className={({ isActive }) => (
+            isActive ? 'bg-accent text-accent-foreground rounded-md' : ''
+          )}>
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 cursor-pointer">
+              <MessageSquare className="h-4 w-4" />
+              <span>Chat</span>
+            </Button>
           </NavLink>
         </nav>
 
         {/* Right side */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-          </Button>
-          <div className="flex items-center gap-2">
+          <NotificationsPopover />
+
+          <div
+            onClick={() => navigate("/profile")}
+            className="flex items-center gap-2 cursor-pointer hover:bg-accent py-1 px-2 rounded-xl"
+          >
             <Avatar className="h-8 w-8">
               <AvatarImage src="/placeholder.svg?height=32&width=32" alt="João Cliente" />
-              <AvatarFallback>JC</AvatarFallback>
+              <AvatarFallback>
+                <User className="h-8 w-8 text-zinc-400" fill="currentColor" stroke="none" />
+              </AvatarFallback>
             </Avatar>
             <span className="hidden text-sm font-medium sm:inline-block">João Cliente</span>
           </div>

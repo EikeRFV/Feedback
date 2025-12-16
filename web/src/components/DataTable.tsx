@@ -27,7 +27,6 @@ interface DataTableProps<T extends { id: string }> {
   onSearch?: (query: string) => void;
   searchFields?: (keyof T)[];
   itemsPerPage?: number;
-  title?: string;
 }
 
 export function DataTable<T extends { id: string }>({
@@ -38,7 +37,6 @@ export function DataTable<T extends { id: string }>({
   onSearch,
   searchFields = [],
   itemsPerPage = 10,
-  title,
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<keyof T | null>(null);
@@ -121,7 +119,7 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className="space-y-4">
-      {title && <h2 className="text-2xl font-bold">{title}</h2>}
+
 
       {/* Busca */}
       {searchFields.length > 0 && (
@@ -145,9 +143,8 @@ export function DataTable<T extends { id: string }>({
                 <th key={String(col.key)} className="px-4 py-3 text-left text-sm font-semibold">
                   <button
                     onClick={() => col.sortable && handleSort(col.key)}
-                    className={`flex items-center gap-1 ${
-                      col.sortable ? 'cursor-pointer hover:text-primary' : ''
-                    }`}
+                    className={`flex items-center gap-1 ${col.sortable ? 'cursor-pointer hover:text-primary' : ''
+                      }`}
                   >
                     {col.label}
                     {col.sortable && sortBy === col.key && (

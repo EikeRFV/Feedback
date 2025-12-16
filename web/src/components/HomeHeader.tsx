@@ -8,7 +8,7 @@ export function HomeHeader() {
     <header className="border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Code className="h-5 w-5 text-primary" />
+          <Code className="h-6 w-6 text-indigo-600" strokeWidth={3} />
           <span className="text-lg font-semibold">Hotfix</span>
         </div>
 
