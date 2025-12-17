@@ -28,10 +28,13 @@ api.interceptors.response.use(
       );
     }
 
-    const status = error.response?.status ?? 500;
+    const status = error.response.status;
+    const data = error.response.data;
 
-    const message = error ?? "Erro interno no servidor, tente novamente depois";
-    const data = error.response?.data;
+    const message =
+      data?.error ||
+      data?.message ||
+      "Erro interno no servidor, tente novamente depois";
 
     throw new ApiError(message, status, data);
   }
