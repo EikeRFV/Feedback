@@ -1,22 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { DeveloperInfoCard } from '@/components/DeveloperInfoCard';
-import { api } from '@/services/mock/api';
+import { UsersService } from '@/api/services/users';
+import { AcceptReviewsService } from '@/api/services/accept-reviews';
+import type { Language } from '@/types';
 
-interface Developer {
+export interface Developer {
   id: string;
   name: string;
-  email: string;
   avatar?: string;
   bio?: string;
-  languages?: string[];
+  languages: Language[];
   rating: number;
   reviewCount: number;
-  solutionCount: number;
-  location: string;
-  hourlyRate: number;
-  memberSince: string;
+  createdAt: string;
 }
+
 
 export function Developers() {
   const [developers, setDevelopers] = useState<Developer[]>([]);
@@ -26,7 +25,7 @@ export function Developers() {
 
   const filteredDevelopers = developers.filter((dev) => {
     const fullName = `${dev.name}`.toLowerCase();
-    const languages = dev.languages?.map((lang) => lang.toLowerCase()) || [];
+    const languages = dev.languages?.map((lang) => lang.description.toLowerCase()) || [];
     const query = search.toLowerCase();
 
     return fullName.includes(query) || languages.some((lang) => lang.includes(query));
@@ -34,10 +33,25 @@ export function Developers() {
 
   useEffect(() => {
     const loadDevelopers = async () => {
-      const result = await api.get('/developers');
-      if (result.data) {
-        setDevelopers(result.data as Developer[]);
-      }
+      const developers = await UsersService.findAllDevs();
+      const results: Developer[] = await Promise.all(
+        developers.results.map(async (dev) => {
+          const reviewCount = await AcceptReviewsService.findCountByDev()
+
+          return {
+            id: dev.id,
+            name: `${dev.firstName} ${dev.lastName}`,
+            avatar: dev.avatar ?? undefined,
+            bio: dev.bio ?? undefined,
+            languages: dev.languages ?? [],
+            rating: dev.rating ?? 0,
+            reviewCount: reviewCount ?? 0,
+            createdAt: dev.createdAt,
+          };
+        })
+      );
+
+      setDevelopers(results);
       setIsLoading(false);
     };
 
@@ -60,7 +74,7 @@ export function Developers() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {filteredDevelopers.map((dev) => (
           <DeveloperInfoCard {...dev} key={dev.name} />
         ))}
