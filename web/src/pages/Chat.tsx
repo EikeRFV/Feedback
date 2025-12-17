@@ -2,75 +2,55 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ChatService } from '@/services/chat';
 import { Loader2, Send } from 'lucide-react';
-import { api } from '@/services/mock/api';
-
-interface ChatRoom {
-  id: string;
-  title: string;
-  participants: any[];
-  unreadCount: number;
-  updatedAt: string;
-  relatedRequest?: string;
-  lastMessage?: {
-    content: string;
-    createdAt: string;
-    author: {
-      name: string;
-    };
-  };
-}
-
-interface Message {
-  id: string;
-  content: string;
-  author: { name: string };
-  createdAt: string;
-}
+import { ChatService } from '@/api/services/chat';
+import type { ChatMessage, ChatRoom } from '@/types';
 
 export function Chat() {
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [messageInput, setMessageInput] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadRooms = async () => {
-      const result = await api.get('/chat/rooms');
-      if (result.data) {
-        setRooms(result.data as ChatRoom[]);
-        if ((result.data as ChatRoom[]).length > 0) {
-          setSelectedRoom((result.data as ChatRoom[])[0].id);
-        }
-      }
-      setIsLoading(false);
-    };
+  const loadRooms = async () => {
+    const result = await ChatService.getRooms();
+    if (result) {
+      setRooms(result);
 
+      if ((result).length > 0) {
+        setSelectedRoom(result[0].id);
+      }
+    }
+    setIsLoading(false);
+  };
+
+
+  const loadMessages = async () => {
+    if (selectedRoom) {
+      const result = await ChatService.getMessages(selectedRoom);
+      if (result.results) {
+        setMessages(result.results);
+      }
+    }
+  };
+
+  useEffect(() => {
     loadRooms();
   }, []);
 
   useEffect(() => {
-    if (selectedRoom) {
-      const loadMessages = async () => {
-        const result = await api.get(`/chat/room/${selectedRoom}/messages`);
-        if (result.data) {
-          setMessages(result.data as Message[]);
-        }
-      };
-
-      loadMessages();
-    }
+    loadMessages();
   }, [selectedRoom]);
 
   const sendMessage = async () => {
     if (!messageInput.trim() || !selectedRoom) return;
 
-    const result = await ChatService.sendMessage(selectedRoom, { content: messageInput });
-
-    if (result.data) {
-      setMessages((prev) => [...prev, result.data as Message]);
+    const result = await ChatService.sendMessage(selectedRoom, {
+      content: messageInput,
+    });
+    if (result) {
+      setMessages((prev) => [...prev, result]);
       setMessageInput('');
     }
   };
@@ -91,10 +71,12 @@ export function Chat() {
               onClick={() => setSelectedRoom(room.id)}
             >
               <CardContent className="pt-4">
-                <p className="font-semibold">{room.title}</p>
-                <p className="text-sm truncate opacity-70">
-                  {room.lastMessage?.content}
-                </p>
+                <p className="font-semibold">{`${room.client?.firstName} ${room.client?.lastName}`}</p>
+                {messages.length > 0 && (
+                  <p className="text-sm truncate opacity-70">
+                    {messages[messages.length - 1].content}
+                  </p>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -105,9 +87,8 @@ export function Chat() {
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 border rounded-lg p-4">
           {messages.map((msg) => (
             <div key={msg.id} className="flex flex-col">
-              <span className="text-sm font-semibold">{msg.author.name}</span>
+              <span className="text-sm font-semibold">{msg.user && `${msg.user.firstName} ${msg.user.lastName}`}</span>
               <p className="bg-gray-100 rounded p-2">{msg.content}</p>
-              <span className="text-xs text-gray-500">{new Date(msg.createdAt).toLocaleTimeString()}</span>
             </div>
           ))}
         </div>

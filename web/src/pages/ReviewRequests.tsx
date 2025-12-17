@@ -2,38 +2,58 @@ import { useEffect, useState } from 'react';
 import type { DataTableColumn, DataTableAction } from '@/components/DataTable';
 import { DataTable } from '@/components/DataTable';
 import { Badge } from '@/components/ui/badge';
-import { ReviewRequestsService } from '@/services/review-request';
 import { Code, Plus } from 'lucide-react';
 import { RedirectButton } from '@/components/RedirectButton';
-import { api } from '@/services/mock/api';
+import { Languages, ReviewRequestStatus, type ReviewRequest } from '@/types';
+import { ReviewRequestsService } from '@/api/services/review-request';
+import { useAuth } from '@/hooks/useAuth';
+import { AcceptReviewsService } from '@/api/services/accept-reviews';
+import { ApiError } from '@/api/errors/api-error';
+import { toast } from 'sonner';
 
-interface ReviewRequest {
-  id: string;
-  title: string;
-  description: string;
-  budget: number;
-  languages: string[];
-  status: string;
-  author?: { name: string };
-  createdAt: string;
-}
 
-export function ReviewRewquests() {
+export function ReviewRequests() {
   const [requests, setRequests] = useState<ReviewRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth()
 
-  useEffect(() => {
-    const loadRequests = async () => {
-      const result = await api.get('/review-requests');
-      if (result.data) {
-        setRequests(Array.isArray(result.data) ? result.data : []);
+
+  const loadRequests = async () => {
+    if (!user) return;
+
+    setIsLoading(true);
+
+    let result: ReviewRequest[] = [];
+
+    try {
+      if (user.roleId === 1) {
+        const reviews = await ReviewRequestsService.findByUser();
+        result = reviews.results;
+      } else if (user.roleId === 2) {
+        const acceptsReviews = await AcceptReviewsService.findAllByDev();
+        result = (
+          await Promise.all(
+            acceptsReviews.map((acceptReview) =>
+              ReviewRequestsService.findById(acceptReview.reviewId)
+            )
+          )
+        ).filter((r): r is ReviewRequest => r !== null);
       }
+
+      setRequests(result);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        toast.error(error.message)
+      }
+
+      setRequests([]);
+    } finally {
       setIsLoading(false);
-
-    };
-
+    }
+  };
+  useEffect(() => {
     loadRequests();
-  }, []);
+  }, [user]);
 
 
   const columns: DataTableColumn<ReviewRequest>[] = [
@@ -50,20 +70,16 @@ export function ReviewRewquests() {
       ),
     },
     {
-      key: 'languages',
+      key: 'language',
       label: 'Linguagem',
       sortable: true,
-      render: (value: string[]) => (
-        <div className="flex flex-wrap gap-1">
-          {value.map((lang) => (
-            <Badge
-              variant="outline"
-              key={lang}
-            >
-              {lang}
-            </Badge>
-          ))}
-        </div>
+      render: (value: number) => (
+        <Badge
+          variant="outline"
+          key={value}
+        >
+          {Languages[value as keyof typeof Languages]}
+        </Badge>
       ),
     },
     {
@@ -77,18 +93,18 @@ export function ReviewRewquests() {
       ),
     },
     {
-      key: 'budget',
-      label: 'Orçamento',
+      key: 'price',
+      label: 'Valor',
       sortable: true,
-      render: (value) => <span className="font-semibold">${value}</span>,
+      render: (value) => <span className="font-semibold">R$ {value}</span>,
     },
     {
       key: 'status',
       label: 'Status',
       sortable: true,
       render: (value) => (
-        <Badge variant={value === 'open' ? 'default' : 'secondary'}>
-          {value}
+        <Badge variant={value === 1 ? 'default' : 'secondary'}>
+          {ReviewRequestStatus[value as keyof typeof ReviewRequestStatus]}
         </Badge>
       ),
     },
@@ -105,17 +121,12 @@ export function ReviewRewquests() {
       label: 'Ver Detalhes',
       onClick: (row) => console.log('Ver:', row.id),
     },
-    {
-      label: 'Oferecer',
-      onClick: (row) => console.log('Oferecer:', row.id),
-      condition: (row) => row.status === 'open',
-    },
   ];
 
   return (
     <div className="p-8">
       <div className='flex justify-between mb-6'>
-        <h2 className="text-3xl font-bold">Review Requests</h2>
+        <h2 className="text-3xl font-bold">Reviews</h2>
         <RedirectButton redirectPage='/review-requests/create' icon={Plus} text='Criar Review Request' />
       </div>
       <DataTable<ReviewRequest>
@@ -123,7 +134,7 @@ export function ReviewRewquests() {
         data={requests}
         actions={actions}
         isLoading={isLoading}
-        searchFields={['title', 'description', 'languages']}
+        searchFields={['title', 'description', 'language']}
         itemsPerPage={10}
       />
     </div>
