@@ -5,22 +5,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Code2, Loader2 } from 'lucide-react';
+import { Check, ChevronDown, Code2, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { AuthService } from '@/api/services/auth';
 import { ApiError } from '@/api/errors/api-error';
+import type { Signup } from '@/types';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { availableLanguages } from '../CreateReviewRequest';
+import { Badge } from '@/components/ui/badge';
 
 type RoleId = 1 | 2;
 
 export function Signup() {
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Signup>({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: '',
     roleId: 1 as RoleId,
+    languages: []
   });
   const navigate = useNavigate();
 
@@ -29,6 +33,22 @@ export function Signup() {
     value: typeof formData[K]
   ) {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function toggleLanguage(languageId: number) {
+    setFormData((prev) => ({
+      ...prev,
+      languages: prev.languages.includes(languageId)
+        ? prev.languages.filter((id) => id !== languageId)
+        : [...prev.languages, languageId],
+    }));
+  }
+
+  function removeLanguage(languageId: number) {
+    setFormData((prev) => ({
+      ...prev,
+      languages: prev.languages.filter((id) => id !== languageId),
+    }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -41,6 +61,7 @@ export function Signup() {
       password,
       confirmPassword,
       roleId,
+      languages,
     } = formData;
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
@@ -67,6 +88,7 @@ export function Signup() {
         email,
         password,
         roleId,
+        languages
       });
 
       toast.success('Conta criada com sucesso! Faça login para continuar.');
@@ -135,6 +157,83 @@ export function Signup() {
                   onChange={(e) => handleChange('email', e.target.value)}
                   disabled={isLoading}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Linguagens</Label>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className="w-full justify-between"
+                      disabled={isLoading}
+                    >
+                      {formData.languages.length > 0
+                        ? `${formData.languages.length} selecionada(s)`
+                        : 'Selecionar linguagens'}
+                      <ChevronDown className="ml-2 size-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent
+                    align="start"
+                    side="bottom"
+                    sideOffset={4}
+                    className="p-2 min-w-[--radix-popover-trigger-width]"
+                  >
+                    <div className="max-h-60 overflow-y-auto space-y-1">
+                      {availableLanguages.map((language) => {
+                        const selected = formData.languages.includes(language.value);
+
+                        return (
+                          <button
+                            key={language.value}
+                            type="button"
+                            onClick={() => toggleLanguage(language.value)}
+                            className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-accent"
+                          >
+                            <span>{language.label}</span>
+
+                            {selected && (
+                              <Check className="size-4 text-blue-600" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {formData.languages.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.languages.map((id) => {
+                      const language = availableLanguages.find(
+                        (l) => l.value === id
+                      );
+
+                      if (!language) return null;
+
+                      return (
+                        <Badge
+                          key={id}
+                          variant="secondary"
+                          className="flex items-center gap-1 bg-blue-100 text-blue-700"
+                        >
+                          {language.label}
+                          <button
+                            type="button"
+                            onClick={() => removeLanguage(id)}
+                            className="ml-1 rounded-full hover:bg-blue-200 p-0.5"
+                          >
+                            <X className="size-3" />
+                          </button>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">

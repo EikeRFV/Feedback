@@ -49,6 +49,17 @@ export interface User {
   createdAt: string;
 }
 
+
+export interface Signup {
+  firstName: string;
+  lastName: string;
+  password: string;
+  confirmPassword?: string;
+  email: string;
+  roleId: number;
+  languages: number[];
+}
+
 export interface Language {
   id: number;
   description: string;
