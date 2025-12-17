@@ -38,9 +38,12 @@ interface UserAttributes {
   roleId: UserRole;
   active: boolean;
   devStatusId: number;
+  rating: number;
+  bio: string;
+  avatar: string;
 }
 
-export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'active' | 'devStatusId'>;
+export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'active' | 'devStatusId' | 'rating' | 'bio' | 'avatar'>;
 
 @Table({
   tableName: 'users',
@@ -68,6 +71,16 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @Default(true)
   @Column
   active!: boolean;
+
+  @Default(5.0)
+  @Column
+  rating!: number;
+
+  @Column
+  bio!: string;
+
+  @Column
+  avatar!: string;
 
   @ForeignKey(() => Role)
   @Column

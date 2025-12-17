@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsEmail, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Languages } from 'src/common/entities/language.entity';
 import { DevStatuses } from '../entities/user.entity';
 
@@ -32,6 +32,18 @@ export class UpdateUserDto {
   @IsInt({ each: true })
   @ArrayMinSize(1)
   languages: Languages[]
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(5)
+  rating?: number;
+
+  @IsOptional()
+  bio?: string;
+
+  @IsOptional()
+  avatar?: string;
 }
 
 export class UpdateDevStatusDto {

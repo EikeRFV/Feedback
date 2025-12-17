@@ -1,4 +1,3 @@
-import { ReviewRequest } from '@/modules/review-request/entities/review-request.entity';
 import { Optional } from 'sequelize';
 import {
   Table,

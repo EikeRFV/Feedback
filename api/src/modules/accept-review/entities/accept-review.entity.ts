@@ -16,10 +16,10 @@ interface AcceptReviewAttributes {
   id: string,
   devId: string
   reviewId: string
-  status: AcceptReviewStatuses
+  statusId: AcceptReviewStatuses
 }
 
-export type AcceptReviewAttributesCreation = Optional<AcceptReviewAttributes, 'status' | 'id'>
+export type AcceptReviewAttributesCreation = Optional<AcceptReviewAttributes, 'statusId' | 'id'>
 
 @Table({ tableName: 'accepts_reviews' })
 export class AcceptReview extends Model<AcceptReviewAttributes, AcceptReviewAttributesCreation> {
