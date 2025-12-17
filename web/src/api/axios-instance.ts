@@ -20,6 +20,14 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => (res.data),
   (error) => {
+    if (!error.response) {
+      throw new ApiError(
+        "Servidor indisponível. Tente novamente mais tarde.",
+        503,
+        null
+      );
+    }
+
     const status = error.response?.status ?? 500;
 
     const message = error ?? "Erro interno no servidor, tente novamente depois";

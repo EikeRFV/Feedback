@@ -1,13 +1,16 @@
 import { api } from "../axios-instance";
+import type { LoginResponse, DefaultResponse } from "@/types";
 
 
 export const AuthService = {
-  login(data: { email: string; password: string }) {
-    return api.post("/auth/login", data);
-  },
+	async login(data: { email: string; password: string }): Promise<LoginResponse> {
+		const result = await api.post("/auth/login", data);
+		return result.data;
+	},
 
 
-  signup(data: any) {
-    return api.post("/auth/signup", data);
-  },
+	async signup(data: any): Promise<DefaultResponse> {
+		const result = await api.post("/auth/signup", data);
+		return result.data;
+	},
 };

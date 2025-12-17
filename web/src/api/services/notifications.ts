@@ -1,38 +1,46 @@
 import { api } from "../axios-instance";
+import type { Notification, Paginated, DefaultResponse } from "@/types";
 
 
 export const NotificationsService = {
-  create(data: any) {
-    return api.post("/notifications", data);
-  },
+	async create(data: any): Promise<Notification> {
+		const result = await api.post("/notifications", data);
+		return result.data;
+	},
 
 
-  findAll(params?: any) {
-    return api.get("/notifications", { params });
-  },
+	async findAll(params?: any): Promise<Paginated<Notification>> {
+		const result = await api.get("/notifications", { params });
+		return result.data;
+	},
 
 
-  findUnread(params?: any) {
-    return api.get("/notifications/unread", { params });
-  },
+	async findUnread(params?: any): Promise<Paginated<Notification>> {
+		const result = await api.get("/notifications/unread", { params });
+		return result.data;
+	},
 
 
-  markAsRead(id: string) {
-    return api.patch(`/notifications/${id}/read`);
-  },
+	async markAsRead(id: string): Promise<DefaultResponse> {
+		const result = await api.patch(`/notifications/${id}/read`);
+		return result.data;
+	},
 
 
-  markAllAsRead() {
-    return api.patch("/notifications/mark-all-read");
-  },
+	async markAllAsRead(): Promise<DefaultResponse> {
+		const result = await api.patch("/notifications/mark-all-read");
+		return result.data;
+	},
 
 
-  update(id: string, data: any) {
-    return api.patch(`/notifications/${id}`, data);
-  },
+	async update(id: string, data: any): Promise<DefaultResponse> {
+		const result = await api.patch(`/notifications/${id}`, data);
+		return result.data;
+	},
 
 
-  remove(id: string) {
-    return api.delete(`/notifications/${id}`);
-  },
+	async remove(id: string): Promise<DefaultResponse> {
+		const result = await api.delete(`/notifications/${id}`);
+		return result.data;
+	},
 };

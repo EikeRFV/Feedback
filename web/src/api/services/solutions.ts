@@ -1,28 +1,34 @@
 import { api } from "../axios-instance";
+import type { Solution, DefaultResponse } from "@/types";
 
 
 export const SolutionsService = {
-  create(data: any) {
-    return api.post("/solutions", data);
-  },
+	async create(data: any): Promise<DefaultResponse> {
+		const result = await api.post("/solutions", data);
+		return result.data;
+	},
 
 
-  accept(id: string) {
-    return api.patch(`/solutions/accept/${id}`);
-  },
+	async accept(id: string): Promise<DefaultResponse> {
+		const result = await api.patch(`/solutions/accept/${id}`);
+		return result.data;
+	},
 
 
-  update(id: string, solution: string) {
-    return api.patch(`/solutions/${id}`, { solution });
-  },
+	async update(id: string, solution: string): Promise<DefaultResponse> {
+		const result = await api.patch(`/solutions/${id}`, { solution });
+		return result.data;
+	},
 
 
-  findByReview(reviewId: string) {
-    return api.get(`/solutions/by-review/${reviewId}`);
-  },
+	async findByReview(reviewId: string): Promise<Solution | null> {
+		const result = await api.get(`/solutions/by-review/${reviewId}`);
+		return result.data;
+	},
 
 
-  findById(id: string) {
-    return api.get(`/solutions/${id}`);
-  },
+	async findById(id: string): Promise<Solution | null> {
+		const result = await api.get(`/solutions/${id}`);
+		return result.data;
+	},
 };

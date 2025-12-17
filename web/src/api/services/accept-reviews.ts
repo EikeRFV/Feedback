@@ -1,28 +1,35 @@
 import { api } from "../axios-instance";
+import type { AcceptReview, AcceptReviewResponse } from "@/types";
 
 
 export const AcceptReviewsService = {
-  create(data: { reviewId: string }) {
-    return api.post("/accepts-reviews", data);
+  async create(data: { reviewId: string }): Promise<AcceptReviewResponse> {
+    const result = await api.post("/accepts-reviews", data);
+    return result.data;
   },
 
-
-  reject(reviewId: string, devId: string) {
-    return api.put(`/accepts-reviews/${reviewId}/${devId}/reject`);
+  async reject(reviewId: string, devId: string): Promise<AcceptReviewResponse> {
+    const result = await api.put(`/accepts-reviews/${reviewId}/${devId}/reject`);
+    return result.data;
   },
 
-
-  accept(reviewId: string, devId: string) {
-    return api.put(`/accepts-reviews/${reviewId}/${devId}/accept`);
+  async accept(reviewId: string, devId: string): Promise<AcceptReviewResponse> {
+    const result = await api.put(`/accepts-reviews/${reviewId}/${devId}/accept`);
+    return result.data;
   },
 
-
-  findAllByDev() {
-    return api.get("/accepts-reviews");
+  async findAllByDev(): Promise<AcceptReview[]> {
+    const result = await api.get("/accepts-reviews/dev");
+    return result.data;
   },
 
+  async findCompletedCountByDev(): Promise<number> {
+    const result = await api.get("/accepts-reviews/dev/completed/count");
+    return result.data;
+  },
 
-  findPendingByReview(reviewId: string) {
-    return api.get(`/accepts-reviews/${reviewId}`);
+  async findCountByDev(): Promise<number> {
+    const result = await api.get("/accepts-reviews/dev/count");
+    return result.data;
   },
 };

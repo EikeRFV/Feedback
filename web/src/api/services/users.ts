@@ -1,33 +1,40 @@
 import { api } from "../axios-instance";
+import type { User, Paginated, DefaultResponse } from "@/types";
 
 
 export const UsersService = {
-  async me() {
-    return await api.get("/users/me");
-  },
+	async me(): Promise<User> {
+		const result = await api.get("/users/me");
+		return result.data;
+	},
 
 
-  async findAll(params?: any) {
-    return await api.get("/users", { params });
-  },
+	async findAll(params?: any): Promise<Paginated<User>> {
+		const result = await api.get("/users", { params });
+		return result.data;
+	},
 
 
-  async findAllDevs(params?: any) {
-    return await api.get("/users/developers", { params });
-  },
+	async findAllDevs(params?: any): Promise<Paginated<User>> {
+		const result = await api.get("/users/developers", { params });
+		return result.data;
+	},
 
 
-  async update(data: any) {
-    return await api.put("/users", data);
-  },
+	async update(data: any): Promise<DefaultResponse> {
+		const result = await api.put("/users", data);
+		return result.data;
+	},
 
 
-  updateDevStatus(status: string) {
-    return api.put("/users/status/dev", { status });
-  },
+	async updateDevStatus(status: string): Promise<DefaultResponse> {
+		const result = await api.put("/users/status/dev", { status });
+		return result.data;
+	},
 
 
-  remove() {
-    return api.delete("/users");
-  },
+	async remove(): Promise<DefaultResponse> {
+		const result = await api.delete("/users");
+		return result.data;
+	},
 };

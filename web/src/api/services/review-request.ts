@@ -1,28 +1,30 @@
+import type { Paginated, ReviewRequest, DefaultResponse } from "@/types";
 import { api } from "../axios-instance";
 
 
 export const ReviewRequestsService = {
-  create(data: any) {
-    return api.post("/review-requests", data);
+  async create(data: ReviewRequest): Promise<DefaultResponse> {
+    const result = await api.post("/review-requests", data);
+    return result.data;
   },
 
-
-  findAll(params?: any) {
-    return api.get("/review-requests", { params });
+  async findAll(params?: any): Promise<Paginated<ReviewRequest>> {
+    const result = await api.get("/review-requests", { params });
+    return result.data;
   },
 
-
-  findByUser(params?: any) {
-    return api.get("/review-requests/by-user", { params });
+  async findByUser(params?: any): Promise<Paginated<ReviewRequest>> {
+    const result = await api.get<Paginated<ReviewRequest>>("/review-requests/by-user", { params });
+    return result.data;
   },
 
-
-  findById(id: string) {
-    return api.get(`/review-requests/${id}`);
+  async findById(id: string): Promise<ReviewRequest | null> {
+    const result = await api.get(`/review-requests/${id}`);
+    return result.data;
   },
 
-
-  remove(id: string) {
-    return api.delete(`/review-requests/${id}`);
+  async remove(id: string): Promise<DefaultResponse> {
+    const result = await api.delete(`/review-requests/${id}`);
+    return result.data;
   },
 };

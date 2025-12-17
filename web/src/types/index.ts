@@ -1,67 +1,150 @@
-// User types
+export const Languages = {
+  1: 'JavaScript',
+  2: 'TypeScript',
+  3: 'Python',
+  4: 'Java',
+  5: 'C#',
+  6: 'C',
+  7: 'C++',
+  8: 'Go',
+  9: 'Rust',
+  10: 'PHP',
+  11: 'Ruby',
+  12: 'Kotlin',
+  13: 'Swift',
+  14: 'Dart',
+  15: 'Scala',
+  16: 'R',
+} as const;
+
+export const paymentMethods = {
+  1: 'PIX',
+  2: 'Cartão de Crédito',
+} as const;
+
+
+export const ReviewRequestStatus = {
+  1: 'Open',
+  2: 'In Progress',
+  3: 'Done',
+  4: 'Cancelled',
+} as const;
+
+export const AcceptReviewStatuses = {
+  1: 'Pending',
+  2: 'Accepted',
+  3: 'Rejected',
+  4: 'Completed',
+} as const;
+
 export interface User {
   id: string;
-  name: string;
-  email: string;
-  role: 'dev' | 'client' | 'admin';
+  firstName: string;
+  lastName: string;
+  roleId: number;
   avatar?: string;
   bio?: string;
-  languages: string[];
+  languages: Language[];
   rating: number;
-  reviewCount: number;
-  solutionCount: number;
-  memberSince: string;
-  balance?: number;
-  location?: string;
-  available?: boolean;
-  hourlyRate?: number;
+  createdAt: string;
+}
+
+export interface Language {
+  id: number;
+  description: string;
+}
+
+export interface Profile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  roleId: number;
+  avatar?: string;
+  bio?: string;
+  languages: Language[];
+  rating: number;
+  createdAt: string;
+  solutionCount?: number;
+  reviewCount?: number;
+  requestCount?: number;
 }
 
 export interface ReviewRequest {
   id: string;
+  userId?: string;
+  price: number;
   title: string;
   description: string;
-  languages: string[];
-  budget: number;
-  status: string;
-  repositoryUrl: string;
-  attachments: { id: string; name: string; url: string }[];
+  codeSnippet: string;
+  status?: number;
+  language: number;
+  paymentMethod: number;
   createdAt: string;
-  updatedAt: string;
-  completedAt?: string;
-  client: User;
-  assignedDev: User | null;
-  solutionsCount: number;
 }
 
-export interface Attachment {
-  id: string;
-  name: string;
-  url: string;
-  size: number;
-  type: string;
-}
-
-// Solution types
-export interface Solution {
+export interface ChatRoom {
   id: string;
   reviewId: string;
-  reviewTitle?: string;
-  content: string;
-  price: number;
-  status: 'pending' | 'accepted' | 'rejected';
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    id: string;
-    name: string;
-    avatar?: string;
-    rating: number;
-  };
-  attachments?: Attachment[];
+  devId: string;
+  clientId: string;
+
+  reviewRequest?: ReviewRequest;
+  dev?: User;
+  client?: User;
+
+  messages?: ChatMessage[];
 }
 
-// Comment types
+export interface ChatMessage {
+  id: string;
+  roomId: string;
+  userId: string;
+  content: string;
+  edited: boolean;
+
+  room?: ChatRoom;
+  user?: User;
+}
+
+export interface AcceptReviewStatuses {
+  id: string;
+  description: string;
+}
+
+export interface AcceptReview {
+  devId: string;
+  reviewId: string;
+  statusId: AcceptReviewStatuses;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface Paginated<TData> {
+  total: number;
+  limit: number;
+  offset: number;
+  results: TData[];
+}
+
+export interface DefaultResponse {
+  id: string;
+  message: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  token: string;
+}
+
+export interface AcceptReviewResponse {
+  devId: string;
+  reviewId: string;
+  message: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+
 export interface Comment {
   id: string;
   content: string;
@@ -73,180 +156,6 @@ export interface Comment {
     name: string;
     avatar?: string;
   };
-  // Para solution comments
   solutionId?: string;
-  // Para user comments
   userId?: string;
-}
-
-// Chat types
-export interface ChatRoom {
-  id: string;
-  title: string;
-  type: 'direct' | 'group' | 'review';
-  participants: User[];
-  lastMessage?: Message;
-  unreadCount: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Message {
-  id: string;
-  roomId: string;
-  content: string;
-  createdAt: string;
-  updatedAt?: string;
-  edited?: boolean;
-  author: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  attachments?: Attachment[];
-  read?: boolean;
-}
-
-// Notification types
-export interface Notification {
-  id: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  title: string;
-  message: string;
-  read: boolean;
-  createdAt: string;
-  actionUrl?: string;
-  metadata?: Record<string, any>;
-}
-
-// Payment types
-export interface Payment {
-  id: string;
-  amount: number;
-  currency: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
-  method: 'credit_card' | 'debit_card' | 'pix' | 'bank_transfer';
-  createdAt: string;
-  completedAt?: string;
-  description?: string;
-  metadata?: Record<string, any>;
-}
-
-export interface Statement {
-  id: string;
-  userId: string;
-  type: 'credit' | 'debit';
-  amount: number;
-  balance: number;
-  description: string;
-  createdAt: string;
-  reference?: {
-    type: 'review' | 'solution' | 'payment' | 'refund';
-    id: string;
-  };
-}
-
-// Rating types
-export interface Rating {
-  id: string;
-  reviewId: string;
-  targetUserId: string;
-  authorId: string;
-  stars: number;
-  comment?: string;
-  createdAt: string;
-}
-
-// Analytics types
-export interface LanguageStats {
-  language: string;
-  count: number;
-  percentage: number;
-}
-
-export interface EarningsStats {
-  date: string;
-  amount: number;
-}
-
-export interface ReviewStats {
-  status: string;
-  count: number;
-}
-
-// API Response types
-export interface ApiResponse<T> {
-  data?: T;
-  error?: string;
-  message?: string;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  page: number;
-  limit: number;
-  total: number;
-  hasMore: boolean;
-}
-
-// Form types
-export interface LoginFormData {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
-
-export interface RegisterFormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  role: 'dev' | 'client';
-}
-
-export interface ReviewRequestFormData {
-  title: string;
-  description: string;
-  repositoryUrl?: string;
-  languages: string[];
-  price: number;
-  dueDate?: string;
-  attachments?: File[];
-}
-
-export interface SolutionFormData {
-  reviewId: string;
-  content: string;
-  price: number;
-  attachments?: File[];
-}
-
-// WebSocket event types
-export interface WebSocketEvent {
-  type: 'joinRoom' | 'leaveRoom' | 'newMessage' | 'messageUpdated' | 'messageDeleted' | 'typing' | 'online' | 'offline';
-  roomId?: string;
-  userId?: string;
-  message?: Message;
-  messageId?: string;
-  updates?: Partial<Message>;
-}
-
-// Filter types
-export interface ReviewRequestFilters {
-  status?: string;
-  language?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  search?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface DeveloperFilters {
-  language?: string;
-  minRating?: number;
-  available?: boolean;
-  search?: string;
-  page?: number;
-  limit?: number;
 }

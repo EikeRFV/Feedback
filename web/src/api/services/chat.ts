@@ -1,33 +1,39 @@
+import type { ChatMessage, ChatRoom, Paginated } from "@/types";
 import { api } from "../axios-instance";
 
 
 export const ChatService = {
-  createRoom(data: any) {
-    return api.post("/chat/room", data);
-  },
+	async createRoom(data: any): Promise<ChatRoom> {
+		const result = await api.post("/chat/room", data);
+		return result.data;
+	},
 
 
-  getRooms() {
-    return api.get("/chat/rooms");
-  },
+	async getRooms(): Promise<ChatRoom[]> {
+		const result = await api.get("/chat/rooms");
+		return result.data;
+	},
 
 
-  getMessages(roomId: string, params?: { limit?: number; offset?: number }) {
-    return api.get(`/chat/room/${roomId}/messages`, { params });
-  },
+	async getMessages(roomId: string, params?: { limit?: number; offset?: number }): Promise<Paginated<ChatMessage>> {
+		const result = await api.get(`/chat/room/${roomId}/messages`, { params });
+		return result.data;
+	},
 
 
-  sendMessage(roomId: string, data: any) {
-    return api.post(`/chat/room/${roomId}/messages`, data);
-  },
+	async sendMessage(roomId: string, data: { content: string }): Promise<ChatMessage> {
+		const result = await api.post(`/chat/room/${roomId}/messages`, data);
+		return result.data;
+	},
 
 
-  updateMessage(messageId: string, data: any) {
-    return api.put(`/chat/message/${messageId}`, data);
-  },
+	async updateMessage(messageId: string, data: any): Promise<ChatMessage> {
+		const result = await api.put(`/chat/message/${messageId}`, data);
+		return result.data;
+	},
 
 
-  deleteMessage(messageId: string) {
-    return api.delete(`/chat/message/${messageId}`);
-  },
+	async deleteMessage(messageId: string): Promise<void> {
+		await api.delete(`/chat/message/${messageId}`);
+	},
 };

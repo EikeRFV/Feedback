@@ -1,28 +1,33 @@
 import { api } from "../axios-instance";
+import type { Comment } from "@/types";
 
 
 export const UserCommentsService = {
-  create(data: any) {
-    return api.post("/user-comments", data);
-  },
+	async create(data: any): Promise<Comment> {
+		const result = await api.post("/user-comments", data);
+		return result.data;
+	},
 
 
-  findAll() {
-    return api.get("/user-comments");
-  },
+	async findAll(): Promise<Comment[]> {
+		const result = await api.get("/user-comments");
+		return result.data;
+	},
 
 
-  findById(id: string) {
-    return api.get(`/user-comments/${id}`);
-  },
+	async findById(id: string): Promise<Comment> {
+		const result = await api.get(`/user-comments/${id}`);
+		return result.data;
+	},
 
 
-  update(id: string, data: any) {
-    return api.patch(`/user-comments/${id}`, data);
-  },
+	async update(id: string, data: any): Promise<Comment> {
+		const result = await api.patch(`/user-comments/${id}`, data);
+		return result.data;
+	},
 
 
-  remove(id: string) {
-    return api.delete(`/user-comments/${id}`);
-  },
+	async remove(id: string): Promise<void> {
+		await api.delete(`/user-comments/${id}`);
+	},
 };
