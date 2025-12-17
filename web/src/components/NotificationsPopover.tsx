@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { api } from '@/services/mock/api';
+import { NotificationsService } from '@/api/services/notifications';
 
 interface Notification {
   id: string;
@@ -26,15 +26,15 @@ export function NotificationsPopover() {
 
   const loadNotifications = async () => {
     setIsLoading(true)
-    const result = await api.get('/notifications');
-    if (result.data) {
-      setNotifications(result.data as Notification[])
+    const result = await NotificationsService.findAll()
+    if (result.results) {
+      setNotifications(result.results)
     }
     setIsLoading(false)
   }
 
   const markAsRead = async (notifId: string) => {
-    await api.patch(`/notifications/${notifId}/read`, {});
+    await NotificationsService.markAsRead(notifId)
     setNotifications(prev =>
       prev.map(n =>
         n.id === notifId ? { ...n, read: true } : n

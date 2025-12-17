@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { NotificationsPopover } from "./NotificationsPopover";
 import { useEffect, useState } from "react";
 import type { User as UserProfile } from "@/types";
-import { api } from "@/services/mock/api";
+import { UsersService } from "@/api/services/users";
 
 export function LoggedHeader() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -13,10 +13,9 @@ export function LoggedHeader() {
 
   useEffect(() => {
     const loadProfile = async () => {
-      const result = await api.getCurrentUser();
-      console.log(result.data)
-      if (result.data) {
-        setProfile(result.data as UserProfile);
+      const result = await UsersService.me();
+      if (result) {
+        setProfile(result);
       }
     };
 
@@ -78,12 +77,12 @@ export function LoggedHeader() {
             className="flex items-center gap-2 cursor-pointer hover:bg-accent py-1 px-2 rounded-xl"
           >
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" alt="João Cliente" />
+              <AvatarImage src="/placeholder.svg?height=32&width=32" alt={`${profile?.firstName} ${profile?.lastName}`} />
               <AvatarFallback>
                 <User className="h-8 w-8 text-zinc-400" fill="currentColor" stroke="none" />
               </AvatarFallback>
             </Avatar>
-            <span className="hidden text-sm font-medium sm:inline-block">{profile?.name}</span>
+            <span className="hidden text-sm font-medium sm:inline-block">{`${profile?.firstName} ${profile?.lastName}`}</span>
           </div>
         </div>
       </div>
