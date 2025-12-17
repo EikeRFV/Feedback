@@ -50,8 +50,7 @@ export function Chat() {
       content: messageInput,
     });
     if (result) {
-      setMessages((prev) => [...prev, result]);
-      setMessageInput('');
+      loadMessages()
     }
   };
 

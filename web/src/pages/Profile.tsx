@@ -3,17 +3,18 @@ import { Calendar, Loader2, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import type { Profile } from '@/types';
+import type { Comment, Profile } from '@/types';
 import { UsersService } from '@/api/services/users';
 import { AcceptReviewsService } from '@/api/services/accept-reviews';
 import { useAuth } from '@/hooks/useAuth';
 import { ReviewRequestsService } from '@/api/services/review-request';
+import { UserCommentsService } from '@/api/services/user-comments';
 
 
 export function Profile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [comments, setComments] = useState<Comment>()
+  const [comments, setComments] = useState<Comment[]>([])
   const { user } = useAuth()
 
   useEffect(() => {
@@ -42,7 +43,14 @@ export function Profile() {
       setIsLoading(false);
     };
 
+    const loadComments = async () => {
+      const comments = await UserCommentsService.findAll()
+
+      setComments(comments)
+    }
+
     loadProfile();
+    loadComments();
   }, []);
 
   //
@@ -81,7 +89,10 @@ export function Profile() {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-3 gap-4">
+          <div
+            className={`mt-8 grid gap-4 ${user?.roleId === 2 ? 'grid-cols-3' : 'grid-cols-2'
+              }`}
+          >
             <div className="rounded-lg bg-gray-50 p-4 text-center">
               <div className="flex items-center justify-center gap-1 text-2xl font-semibold text-gray-900">
                 <span className="text-yellow-500">⭐</span>
@@ -104,17 +115,18 @@ export function Profile() {
               </div>
             )}
           </div>
-
-          <div className="mt-6">
-            <p className="mb-3 text-sm text-gray-600">Linguagens:</p>
-            <div className="flex flex-wrap gap-2">
-              {profile?.languages.map((lang) => (
-                <Badge variant="outline" className="rounded-md bg-white px-3 py-1" key={lang.description}>
-                  {lang.description}
-                </Badge>
-              ))}
+          {profile!.languages.length > 0 && (
+            <div className="mt-6">
+              <p className="mb-3 text-sm text-gray-600">Linguagens:</p>
+              <div className="flex flex-wrap gap-2">
+                {profile?.languages.map((lang) => (
+                  <Badge variant="outline" className="rounded-md bg-white px-3 py-1" key={lang.description}>
+                    {lang.description}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="mt-4">
@@ -147,24 +159,76 @@ export function Profile() {
               </TabsTrigger>
             </TabsList>
 
+
             <TabsContent value="sobre" className="mt-4">
               <div className="rounded-lg bg-white p-8 shadow-sm">
-                <h2 className="text-lg font-semibold text-gray-900">Biografia</h2>
-                <p className="mt-3 text-gray-700 leading-relaxed">
-                  {profile?.bio}
-                </p>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-6">
+                    Biografia
+                  </h2>
+                </div>
+
+                {profile?.bio ? (
+                  <p className="mt-4 text-gray-700 leading-relaxed whitespace-pre-line">
+                    {profile.bio}
+                  </p>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <p className="text-gray-500">
+                      Este usuário ainda não adicionou uma biografia ✍️
+                    </p>
+                  </div>
+                )}
               </div>
             </TabsContent>
 
             <TabsContent value="reviews" className="mt-4">
               <div className="rounded-lg bg-white p-8 shadow-sm">
-                <p className="text-gray-600">Reviews content...</p>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-6">
+                    Reviews
+                  </h2>
+                </div>
+
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <p className="text-gray-500">
+                    Este usuário ainda não recebeu reviews
+                  </p>
+                </div>
               </div>
             </TabsContent>
 
             <TabsContent value="comentarios" className="mt-4">
               <div className="rounded-lg bg-white p-8 shadow-sm">
-                <p className="text-gray-600">Comentários content...</p>
+                <h2 className="text-lg font-semibold text-gray-900 mb-6">
+                  Comentários
+                </h2>
+
+                {!comments || comments.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <p className="text-gray-500">
+                      Ainda não há comentários por aqui
+                    </p>
+                  </div>
+                ) : (
+                  <ul className="space-y-6">
+                    {comments.map((comment) => (
+                      <li key={comment.id} className="flex gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-gray-400">
+                              {new Date(comment.createdAt).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+
+                          <p className="mt-1 text-gray-700 leading-relaxed">
+                            {comment.content}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </TabsContent>
           </Tabs>

@@ -1,4 +1,4 @@
-import { Code, Home, MessageSquare, Search, User } from "lucide-react";
+import { Code, Home, LogOut, MessageSquare, Search, User, UserCircle, UserIcon } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -6,10 +6,18 @@ import { NotificationsPopover } from "./NotificationsPopover";
 import { useEffect, useState } from "react";
 import type { User as UserProfile } from "@/types";
 import { UsersService } from "@/api/services/users";
+import { DropdownMenu, DropdownMenuItem, DropdownMenuLabel, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu.tsx";
+import { useAuth } from "@/hooks/useAuth";
 
 export function LoggedHeader() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate()
+  const { logout } = useAuth()
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login')
+  }
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -72,18 +80,46 @@ export function LoggedHeader() {
         <div className="flex items-center gap-4">
           <NotificationsPopover />
 
-          <div
-            onClick={() => navigate("/profile")}
-            className="flex items-center gap-2 cursor-pointer hover:bg-accent py-1 px-2 rounded-xl"
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" alt={`${profile?.firstName} ${profile?.lastName}`} />
-              <AvatarFallback>
-                <User className="h-8 w-8 text-zinc-400" fill="currentColor" stroke="none" />
-              </AvatarFallback>
-            </Avatar>
-            <span className="hidden text-sm font-medium sm:inline-block">{`${profile?.firstName} ${profile?.lastName}`}</span>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-2 cursor-pointer hover:bg-accent py-1 px-2 rounded-xl">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={profile?.avatar ?? "/placeholder.svg"}
+                    alt={`${profile?.firstName} ${profile?.lastName}`}
+                  />
+                  <AvatarFallback>
+                    <UserIcon className="h-5 w-5 text-zinc-400" />
+                  </AvatarFallback>
+                </Avatar>
+
+                <span className="text-sm font-medium">
+                  {profile?.firstName}
+                </span>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{`${profile?.firstName} ${profile?.lastName}`}</p>
+                </div>
+              </DropdownMenuLabel>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+                <UserCircle className="mr-2 h-4 w-4" />
+                <span>Perfil</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
