@@ -3,23 +3,25 @@ import { PaginatedDto } from 'src/common/dto/paginated-response.dto';
 import { ReviewRequestRepository } from './review-request.repository';
 import { CreateReviewRequestDto } from './dto/create-review-request.dto';
 import { ReviewRequestDto } from './dto/review-request.dto.js';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import { ReviewRequest, ReviewRequestStatus } from './entities/review-request.entity';
-import { ReviewRequestGateway } from './review-request.gateway';
 import { DefaultResponse } from '@/common/dto/default-response.dto';
 
 @Injectable()
 export class ReviewRequestService {
   constructor(
     private readonly reviewResquestRepository: ReviewRequestRepository,
-    private readonly reviewRequestGateway: ReviewRequestGateway
   ) { }
 
   async create(createReviewRequestDto: CreateReviewRequestDto, user: User): Promise<DefaultResponse> {
-    if (user.id !== createReviewRequestDto.userId) {
-      throw new UnprocessableEntityException('User can only create review requests for themselves');
+    if (user.roleId === UserRole.DEVELOPER) {
+      throw new UnprocessableEntityException('Only clients can create review requests')
     }
 
+    createReviewRequestDto = {
+      ...createReviewRequestDto,
+      userId: user.id
+    }
     const review = await this.reviewResquestRepository.create(createReviewRequestDto);
 
     return {

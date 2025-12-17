@@ -12,11 +12,11 @@ export class ChatService {
   constructor(
     private readonly reviewRequestService: ReviewRequestService,
     private readonly eventEmitter: EventEmitter2,
-  ) {}
+  ) { }
 
   async createRoom(createChatRoomDto: CreateChatRoomDto, userId: string): Promise<ChatRoom> {
     const review = await this.reviewRequestService.findOneById(createChatRoomDto.reviewId);
-    
+
     if (!review) {
       throw new NotFoundException('Review request not found');
     }
@@ -77,7 +77,7 @@ export class ChatService {
       where: { roomId },
       limit,
       offset,
-      order: [['createdAt', 'DESC']],
+      order: [['createdAt', 'ASC']],
       include: ['user']
     });
 

@@ -71,7 +71,11 @@ export async function seed(knex: Knex): Promise<void> {
     { user_id: devId1, language: 5 },
     { user_id: devId2, language: 3 },
     { user_id: devId2, language: 4 },
+    { user_id: devId2, language: 1 },
+    { user_id: clientId, language: 3 },
+    { user_id: devId2, language: 4 },
     { user_id: devId2, language: 1 }
+
   ]);
 
   await knex('review_requests').insert({

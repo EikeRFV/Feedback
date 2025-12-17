@@ -5,6 +5,8 @@ import { UpdateUserCommentDto } from './dto/update-user-comment.dto';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { UserComment } from './entities/user-comment.entity';
 import { JwtAuthGuard } from '../auth/guard/auth.guard';
+import { GetUser } from '../auth/decorator/get-user.decorator';
+import { User } from '../users/entities/user.entity';
 
 @Controller('user-comments')
 @ApiTags('User Comments')
@@ -30,8 +32,10 @@ export class UserCommentsController {
     description: 'List all comments'
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  findAll() {
-    return this.userCommentsService.findAll();
+  findAllByUser(
+    @GetUser() user: User,
+  ) {
+    return this.userCommentsService.findAllByUser(user.id);
   }
 
   @Get(':id')

@@ -9,7 +9,7 @@ export class UserCommentsService {
   constructor(
     @InjectModel(UserComment)
     private readonly userCommentModel: typeof UserComment,
-  ) {}
+  ) { }
 
   async create(createUserCommentDto: CreateUserCommentDto): Promise<UserComment> {
     return await this.userCommentModel.create({ ...createUserCommentDto });
@@ -17,6 +17,13 @@ export class UserCommentsService {
 
   async findAll(): Promise<UserComment[]> {
     return await this.userCommentModel.findAll();
+  }
+
+
+  async findAllByUser(userId: string): Promise<UserComment[]> {
+    return await this.userCommentModel.findAll({
+      where: { targetUserId: userId }
+    });
   }
 
   async findOne(id: string): Promise<UserComment> {
