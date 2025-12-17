@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { AcceptReviewService } from "./accept-review.service";
 import { CreateAcceptReviewDto, CreateAcceptReview } from "./dto/create-accept-review.dto";
 import { CurrentUser } from "../auth/decorator/current-user.decorator";
@@ -35,6 +35,7 @@ export class AcceptReviewController {
 
   @UseGuards(JwtAuthGuard)
   @Put(':reviewId/:devId/reject')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: AcceptReviewResponseDto
   })
@@ -42,7 +43,6 @@ export class AcceptReviewController {
     @Param('reviewId') reviewId: string,
     @Param('devId') devId: string,
     @CurrentUser() user: User,
-    @Res() res: Response
   ) {
     const updateAcceptReview: UpdateAcceptReviewDto = {
       devId,
@@ -52,13 +52,12 @@ export class AcceptReviewController {
       reviewStatus: ReviewRequestStatus.OPEN
     }
 
-    const response = await this.acceptReviewRequestService.updateAcceptReviewStatus(updateAcceptReview)
-
-    return res.status(200).json(response)
+    return await this.acceptReviewRequestService.updateAcceptReviewStatus(updateAcceptReview)
   }
 
   @UseGuards(JwtAuthGuard)
   @Put(':reviewId/:devId/accept')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: AcceptReviewResponseDto
   })
@@ -66,7 +65,6 @@ export class AcceptReviewController {
     @Param('reviewId') reviewId: string,
     @Param('devId') devId: string,
     @CurrentUser() user: User,
-    @Res() res: Response
   ) {
     const updateAcceptReview: UpdateAcceptReviewDto = {
       devId,
@@ -76,37 +74,56 @@ export class AcceptReviewController {
       reviewStatus: ReviewRequestStatus.IN_PROGRESS
     }
 
-    const response = await this.acceptReviewRequestService.updateAcceptReviewStatus(updateAcceptReview)
-
-    return res.status(200).json(response)
+    return await this.acceptReviewRequestService.updateAcceptReviewStatus(updateAcceptReview)
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
+  @Get('/dev')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: AcceptReviewDto
   })
   async findAllByDev(
     @CurrentUser() user: User,
-    @Res() res: Response
   ) {
-    const acceptsReviews = await this.acceptReviewRequestService.findAllByDev(user.id)
-
-    return res.status(200).json(acceptsReviews)
+    return await this.acceptReviewRequestService.findAllByDev(user.id)
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':reviewId')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: [AcceptReviewDto]
   })
   async findAllPendingByReviewId(
     @Param('reviewId') reviewId: string,
     @CurrentUser() user: User,
-    @Res() res: Response
   ) {
-    const acceptsReviews = await this.acceptReviewRequestService.findAllPending(reviewId, user.id)
+    return await this.acceptReviewRequestService.findAllPending(reviewId, user.id)
+  }
 
-    return res.status(200).json(acceptsReviews)
+
+  @UseGuards(JwtAuthGuard)
+  @Get('dev/completed/count')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: [AcceptReviewDto]
+  })
+  async findCompletedCountByDev(
+    @CurrentUser() user: User,
+  ) {
+    return await this.acceptReviewRequestService.findCompletedCountByDev(user.id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('dev/count')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: [AcceptReviewDto]
+  })
+  async findCountByDev(
+    @CurrentUser() user: User,
+  ) {
+    return await this.acceptReviewRequestService.findCountByDev(user.id)
   }
 }

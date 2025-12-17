@@ -12,7 +12,7 @@ export class AcceptReviewRepository {
 
   async updateAcceptReviewProgress(updateAcceptReview: UpdateAcceptReviewDto) {
     const { devId, reviewId, acceptReviewStatus } = updateAcceptReview
-    return await AcceptReview.update({ status: acceptReviewStatus }, {
+    return await AcceptReview.update({ statusId: acceptReviewStatus }, {
       where: { reviewId, devId }
     })
   }
@@ -26,8 +26,8 @@ export class AcceptReviewRepository {
   async findAllByDev(devId: string) {
     return await AcceptReview.findAll({
       where: {
-        devId, status: {
-          [Op.in]: [2, 4]
+        devId, statusId: {
+          [Op.in]: [1, 2, 4]
         }
       }
     })
@@ -36,7 +36,7 @@ export class AcceptReviewRepository {
   async findInProgress(reviewId: string) {
     return await AcceptReview.findOne({
       where: {
-        reviewId, status: {
+        reviewId, statusId: {
           status: {
             [Op.in]: [AcceptReviewStatuses.ACCEPTED, AcceptReviewStatuses.COMPLETED],
           },
@@ -47,18 +47,18 @@ export class AcceptReviewRepository {
 
   async rejectAllPending(reviewId: string) {
     return await AcceptReview.update({
-      status: AcceptReviewStatuses.REJECTED
+      statusId: AcceptReviewStatuses.REJECTED
     }, {
       where: {
         reviewId,
-        status: AcceptReviewStatuses.PENDING,
+        statusId: AcceptReviewStatuses.PENDING,
       }
     })
   }
 
   async findAllPeding(reviewId: string) {
     return await AcceptReview.findAll({
-      where: { reviewId, status: AcceptReviewStatuses.PENDING }
+      where: { reviewId, statusId: AcceptReviewStatuses.PENDING }
     })
   }
 
@@ -74,4 +74,16 @@ export class AcceptReviewRepository {
     })
   }
 
+  async findCompletedCountByDev(devId: string) {
+    return await AcceptReview.count({
+      where: { devId, statusId: 4 }
+    })
+  }
+
+
+  async findCountByDev(devId: string) {
+    return await AcceptReview.count({
+      where: { devId }
+    })
+  }
 }

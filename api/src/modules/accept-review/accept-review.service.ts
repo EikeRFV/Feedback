@@ -139,4 +139,12 @@ export class AcceptReviewService {
 
     return acceptReview
   }
+
+  async findCompletedCountByDev(devId: string) {
+    return await this.acceptReviewsRepository.findCompletedCountByDev(devId)
+  }
+
+  async findCountByDev(devId: string) {
+    return await this.acceptReviewsRepository.findCountByDev(devId)
+  }
 }
