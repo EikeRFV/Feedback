@@ -1,17 +1,19 @@
+import { ApiError } from "@/api/errors/api-error"
+import { UsersService } from "@/api/services/users"
+import type { User } from "@/types"
 import {
   createContext,
   useEffect,
   useState,
   type ReactNode
 } from "react"
-import { UsersService } from "@/services/users"
-import { api } from "@/services/mock/api"
+import { toast } from "sonner"
 
 type AuthContextData = {
   token: string | null
-  user: any | null
+  user: User | null
   isAuthenticated: boolean
-  login: (token: string, user: any) => void
+  login: (token: string) => void
   logout: () => void
   loadUser: () => Promise<void>
 }
@@ -24,7 +26,7 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [token, setToken] = useState<string | null>(null)
-  const [user, setUser] = useState<any | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   // Carregar dados ao montar o componente
@@ -34,9 +36,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (storedToken) {
         setToken(storedToken)
 
-        const response = await api.getCurrentUser()
-        if (response.data) {
-          setUser(response.data)
+        try {
+          const response = await UsersService.me()
+
+          setUser(response)
+        } catch (error) {
+          if (error instanceof ApiError) {
+            toast.error(error.message)
+          }
+
+          logout()
         }
       }
 
@@ -44,25 +53,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     loadInitialData()
-  }, [])
+  }, [token])
 
-  function login(token: string, userData: any) {
+  function login(token: string) {
     localStorage.setItem("accessToken", token)
     setToken(token)
-    setUser(userData)
   }
 
   function logout() {
     localStorage.removeItem("accessToken")
-    localStorage.removeItem("refreshToken")
     setToken(null)
     setUser(null)
   }
 
   async function loadUser() {
     const response = await UsersService.me()
-    if (response.data) {
-      setUser(response.data)
+    if (response) {
+      setUser(response)
     }
   }
 
