@@ -8,8 +8,8 @@ export async function up(knex: Knex): Promise<void> {
 
     table.primary(['user_id', 'language'])
 
-    table.foreign('user_id').references('users.id');
-    table.foreign('language').references('languages.id');
+    table.foreign('user_id').references('users.id').onDelete('CASCADE');
+    table.foreign('language').references('languages.id').onDelete('CASCADE');
   })
 }
 

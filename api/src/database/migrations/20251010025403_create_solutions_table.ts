@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.boolean('accepted_solution').defaultTo(false)
     table.timestamps(true, true);
 
-    table.foreign('accept_review_id').references('accepts_reviews.id');
+    table.foreign('accept_review_id').references('accepts_reviews.id').onDelete('CASCADE');
   })
 }
 

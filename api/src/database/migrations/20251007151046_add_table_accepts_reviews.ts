@@ -9,9 +9,9 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('status_id').notNullable().defaultTo(1)
     table.timestamps(true, true);
 
-    table.foreign('status_id').references('accept_review_statuses.id');
-    table.foreign('dev_id').references('users.id');
-    table.foreign('review_id').references('review_requests.id');
+    table.foreign('status_id').references('accept_review_statuses.id').onDelete('CASCADE');
+    table.foreign('dev_id').references('users.id').onDelete('CASCADE');
+    table.foreign('review_id').references('review_requests.id').onDelete('CASCADE');
   })
 }
 

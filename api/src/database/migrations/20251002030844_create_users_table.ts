@@ -15,8 +15,8 @@ export async function up(knex: Knex): Promise<void> {
     table.float('rating').defaultTo(5.0)
     table.timestamps(true, true);
 
-    table.foreign('role_id').references('roles.id')
-    table.foreign('dev_status_id').references('dev_statuses.id')
+    table.foreign('role_id').references('roles.id').onDelete('CASCADE')
+    table.foreign('dev_status_id').references('dev_statuses.id').onDelete('CASCADE')
   });
 }
 

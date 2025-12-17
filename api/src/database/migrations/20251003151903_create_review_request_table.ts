@@ -14,10 +14,11 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('payment_method').notNullable().unsigned();
     table.timestamps(true, true);
 
-    table.foreign('language').references('languages.id');
-    table.foreign('status').references('review_statuses.id');
-    table.foreign('user_id').references('users.id');
-    table.foreign('payment_method').references('payment_methods.id');
+    table.foreign('language').references('languages.id').onDelete('CASCADE');
+    table.foreign('status').references('review_statuses.id').onDelete('CASCADE');
+    table.foreign('user_id').references('users.id').onDelete('CASCADE');
+    table.foreign('payment_method').references('payment_methods.id').onDelete('CASCADE');
+
   });
 }
 
