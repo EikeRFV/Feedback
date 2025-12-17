@@ -1,35 +1,42 @@
 import { useEffect, useState } from 'react';
-import { UsersService } from '@/services/users';
-import { useAuth } from '@/hooks/useAuth';
-import { Calendar, Loader2, MapPin, User } from 'lucide-react';
-import { toast } from 'sonner';
+import { Calendar, Loader2, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import type { User as UserProfile } from '@/types';
-import { api } from '@/services/mock/api';
+import type { Profile } from '@/types';
+import { UsersService } from '@/api/services/users';
+import { AcceptReviewsService } from '@/api/services/accept-reviews';
+import { useAuth } from '@/hooks/useAuth';
+import { ReviewRequestsService } from '@/api/services/review-request';
 
 
 export function Profile() {
-  const { loadUser } = useAuth();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    bio: '',
-  });
+  const [comments, setComments] = useState<Comment>()
+  const { user } = useAuth()
 
   useEffect(() => {
     const loadProfile = async () => {
-      const result = await api.getCurrentUser();
-      if (result.data) {
-        setProfile(result.data as UserProfile);
-        setFormData({
-          firstName: result.data.firstName || '',
-          lastName: result.data.lastName || '',
-          bio: result.data.bio || '',
+      const result = await UsersService.me();
+
+      let solutionCount: number = 0;
+      let reviewCount: number = 0;
+      let requestCount: number = 0;
+
+      if (user?.roleId === 2) {
+        solutionCount = await AcceptReviewsService.findCompletedCountByDev()
+        reviewCount = await AcceptReviewsService.findCountByDev()
+      } else if (user?.roleId === 1) {
+        const paginatedResult = await ReviewRequestsService.findByUser();
+        requestCount = paginatedResult.results.length
+      }
+
+      if (result) {
+        setProfile({
+          ...result,
+          solutionCount,
+          reviewCount
         });
       }
       setIsLoading(false);
@@ -38,17 +45,7 @@ export function Profile() {
     loadProfile();
   }, []);
 
-  const handleSaveProfile = async () => {
-    const result = await api.put('/users/me', formData); if (result.data) {
-      setProfile(result.data as UserProfile);
-      setIsEditing(false);
-      await loadUser();
-      toast.success('Perfil atualizado com sucesso!');
-    } else {
-      toast.error('Erro ao atualizar perfil');
-    }
-  };
-
+  //
   if (isLoading) {
     return <div className="flex items-center justify-center p-8"><Loader2 className="animate-spin" /></div>;
   }
@@ -63,7 +60,7 @@ export function Profile() {
               <Avatar className="h-30 w-30">
                 <AvatarImage
                   src={profile?.avatar}
-                  alt={profile?.name}
+                  alt={`${profile?.firstName} ${profile?.lastName}`}
                 />
                 <AvatarFallback>
                   <User className="h-8 w-8 text-zinc-400" fill="currentColor" stroke="none" />
@@ -71,17 +68,13 @@ export function Profile() {
               </Avatar>
 
               <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold text-gray-900">{profile?.name}</h1>
-                <p className="text-sm text-gray-600">{profile?.role === "dev" ? 'Desenvolvedor' : 'Cliente'}</p>
+                <h1 className="text-2xl font-semibold text-gray-900">{`${profile?.firstName} ${profile?.lastName}`}</h1>
+                <p className="text-sm text-gray-600">{profile?.roleId === 2 ? 'Desenvolvedor' : 'Cliente'}</p>
 
                 <div className="flex flex-col gap-1 text-sm text-gray-600">
                   <div className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    <span>{profile?.location}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    <span>Membro desde {new Date(profile!.memberSince).getFullYear()}</span>
+                    <span>Membro desde {new Date(profile!.createdAt).getFullYear()}</span>
                   </div>
                 </div>
               </div>
@@ -97,21 +90,27 @@ export function Profile() {
               <p className="mt-1 text-sm text-gray-600">Avaliação</p>
             </div>
             <div className="rounded-lg bg-gray-50 p-4 text-center">
-              <div className="text-2xl font-semibold text-gray-900">{profile?.reviewCount}</div>
+              <div className="text-2xl font-semibold text-gray-900">
+                {user?.roleId === 2 ?
+                  profile?.reviewCount :
+                  profile?.requestCount || 0}
+              </div>
               <p className="mt-1 text-sm text-gray-600">Reviews</p>
             </div>
-            <div className="rounded-lg bg-gray-50 p-4 text-center">
-              <div className="text-2xl font-semibold text-gray-900">{profile?.solutionCount}</div>
-              <p className="mt-1 text-sm text-gray-600">Soluções</p>
-            </div>
+            {user?.roleId === 2 && (
+              <div className="rounded-lg bg-gray-50 p-4 text-center">
+                <div className="text-2xl font-semibold text-gray-900">{profile?.solutionCount || 0}</div>
+                <p className="mt-1 text-sm text-gray-600">Soluções</p>
+              </div>
+            )}
           </div>
 
           <div className="mt-6">
             <p className="mb-3 text-sm text-gray-600">Linguagens:</p>
             <div className="flex flex-wrap gap-2">
               {profile?.languages.map((lang) => (
-                <Badge variant="outline" className="rounded-md bg-white px-3 py-1">
-                  {lang}
+                <Badge variant="outline" className="rounded-md bg-white px-3 py-1" key={lang.description}>
+                  {lang.description}
                 </Badge>
               ))}
             </div>
@@ -120,19 +119,26 @@ export function Profile() {
 
         <div className="mt-4">
           <Tabs defaultValue="sobre" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 rounded-lg bg-white p-1 shadow-sm">
+            <TabsList
+              className={`grid w-full rounded-lg bg-white p-1 shadow-sm ${user?.roleId === 2 ? 'grid-cols-3' : 'grid-cols-2'
+                }`}
+            >
               <TabsTrigger
                 value="sobre"
                 className="rounded-md data-[state=active]:bg-gray-100"
               >
                 Sobre
               </TabsTrigger>
-              <TabsTrigger
-                value="reviews"
-                className="rounded-md data-[state=active]:bg-gray-100"
-              >
-                Reviews
-              </TabsTrigger>
+
+              {profile?.roleId === 2 && (
+                <TabsTrigger
+                  value="reviews"
+                  className="rounded-md data-[state=active]:bg-gray-100"
+                >
+                  Reviews
+                </TabsTrigger>
+              )}
+
               <TabsTrigger
                 value="comentarios"
                 className="rounded-md data-[state=active]:bg-gray-100"
