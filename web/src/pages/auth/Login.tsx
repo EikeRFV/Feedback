@@ -29,7 +29,7 @@ export function Login() {
     try {
       setIsLoading(true);
       const result = await AuthService.login({ email, password });
-      login(result.data.token, result.data.user || { email });
+      login(result.token);
 
       toast.success('Login realizado com sucesso!');
       navigate('/');
