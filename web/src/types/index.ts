@@ -82,6 +82,15 @@ export interface ReviewRequest {
   createdAt: string;
 }
 
+export interface CreateReviewRequest {
+  title: string;
+  description: string;
+  price: number;
+  codeSnippet: string;
+  language: number;
+  paymentMethod: number;
+}
+
 export interface ChatRoom {
   id: string;
   reviewId: string;
@@ -147,15 +156,10 @@ export interface AcceptReviewResponse {
 
 export interface Comment {
   id: string;
+  userId: string;
+  targetUserId: string;
   content: string;
+  isEdited: boolean;
   createdAt: string;
-  updatedAt?: string;
-  edited?: boolean;
-  author: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  solutionId?: string;
-  userId?: string;
+  updatedAt: string;
 }
