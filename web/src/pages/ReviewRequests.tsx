@@ -126,7 +126,9 @@ export function ReviewRequests() {
     <div className="p-8">
       <div className='flex justify-between mb-6'>
         <h2 className="text-3xl font-bold">Reviews</h2>
-        <RedirectButton redirectPage='/review-requests/create' icon={Plus} text='Criar Review Request' />
+        {user?.roleId === 1 && (
+          <RedirectButton redirectPage='/review-requests/create' icon={Plus} text='Criar Review Request' />
+        )}
       </div>
       <DataTable<ReviewRequest>
         columns={columns}
