@@ -1,9 +1,9 @@
-import type { Paginated, ReviewRequest, DefaultResponse } from "@/types";
+import type { Paginated, ReviewRequest, DefaultResponse, CreateReviewRequest } from "@/types";
 import { api } from "../axios-instance";
 
 
 export const ReviewRequestsService = {
-  async create(data: ReviewRequest): Promise<DefaultResponse> {
+  async create(data: CreateReviewRequest): Promise<DefaultResponse> {
     const result = await api.post("/review-requests", data);
     return result.data;
   },

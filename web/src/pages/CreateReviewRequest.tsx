@@ -118,7 +118,6 @@ export function CreateReviewRequest() {
 
     setIsLoading(true);
     try {
-
       await ReviewRequestsService.create({
         title: formData.title,
         description: formData.description,
@@ -135,10 +134,14 @@ export function CreateReviewRequest() {
     } catch (error) {
       if (error instanceof ApiError) {
         toast.error(error.message);
+        return
       }
 
       toast.error('Erro ao criar solicitação')
+    } finally {
+      setIsLoading(false)
     }
+
   }
 
   return (

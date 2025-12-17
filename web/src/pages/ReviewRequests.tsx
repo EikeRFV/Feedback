@@ -44,9 +44,8 @@ export function ReviewRequests() {
     } catch (error) {
       if (error instanceof ApiError) {
         toast.error(error.message)
+        setRequests([]);
       }
-
-      setRequests([]);
     } finally {
       setIsLoading(false);
     }

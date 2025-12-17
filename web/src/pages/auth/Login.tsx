@@ -36,6 +36,7 @@ export function Login() {
     } catch (error) {
       if (error instanceof ApiError) {
         toast.error(error.message)
+        return
       }
 
       toast.error('Erro ao fazer login');

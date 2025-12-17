@@ -74,6 +74,7 @@ export function Signup() {
     } catch (error) {
       if (error instanceof ApiError) {
         toast.error(error.message)
+        return
       }
 
       toast.error('Erro ao criar conta');
