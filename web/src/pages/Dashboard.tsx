@@ -29,6 +29,8 @@ export function Dashboard() {
   }
 
   const loadStats = async () => {
+    if (!user) return;
+
     let stats: DashboardStats = {};
 
     if (user?.roleId === 1) {
@@ -76,7 +78,7 @@ export function Dashboard() {
         completedRequests,
         totalSpent,
       }
-    } else {
+    } else if (user?.roleId === 2) {
       const acceptsReviews = await AcceptReviewsService.findAllByDev();
 
       let earnings: number = 0;
@@ -137,7 +139,7 @@ export function Dashboard() {
   useEffect(() => {
     loadStats();
     loadRequests();
-  }, []);
+  }, [user]);
 
   if (isLoading) {
     return <div className="flex items-center justify-center p-8"><Loader2 className="animate-spin" /></div>;
